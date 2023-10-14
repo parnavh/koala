@@ -1,0 +1,29 @@
+{
+  "name": "koala",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "build/main.js",
+  "scripts": {
+    "build": "tsc",
+    "build:changelog": "bunx @discordx/changelog --src src",
+    "dev": "doppler run -- bun --hot src/main.ts",
+    "start": "bun build/main.js"
+  },
+  "dependencies": {
+    "@discordx/importer": "^1.2.3",
+    "@discordx/pagination": "^3.4.1",
+    "discord.js": "^14.13.0",
+    "discordx": "^11.7.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.9",
+    "prettier": "^3.0.3",
+    "typescript": "5.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "bun": ">=1.0.0"
+  }
+}
