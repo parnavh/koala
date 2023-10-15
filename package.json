@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "build:changelog": "bunx @discordx/changelog --src src",
-    "dev": "doppler run -- bun --hot src/main.ts",
+    "dev": "bun --hot src/main.ts",
     "start": "bun build/main.js"
   },
   "dependencies": {
