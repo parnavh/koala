@@ -2,6 +2,7 @@ import { dirname, importx } from "@discordx/importer";
 import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
+import { Queue } from "@/queue";
 
 export const bot = new Client({
   // To use only guild command
@@ -22,7 +23,7 @@ export const bot = new Client({
 
   // Configuration for @SimpleCommand
   simpleCommand: {
-    prefix: process.env.BOT_PREFIX || "`",
+    prefix: "`",
   },
 });
 
@@ -51,6 +52,8 @@ bot.on("interactionCreate", (interaction: Interaction) => {
 bot.on("messageCreate", (message: Message) => {
   bot.executeCommand(message);
 });
+
+bot.queue = new Queue();
 
 async function run() {
   // The following syntax should be used in the commonjs environment

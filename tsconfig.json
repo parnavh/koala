@@ -12,7 +12,13 @@
     "emitDecoratorMetadata": true,
 
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    /* Path Aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "exclude": ["build", "node_modules"]
 }

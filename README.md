@@ -2,14 +2,14 @@
 
 A utility discord bot
 
-# 🏗 Development
+## 🏗 Development
 
 ```
 bun install
 bun dev
 ```
 
-# 💻 Production
+## 💻 Production
 
 ```
 bun install --production
@@ -17,7 +17,7 @@ bun build
 bun start
 ```
 
-# 🐋 Docker
+## 🐋 Docker
 
 To start the application:
 
