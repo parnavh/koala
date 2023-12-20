@@ -16,6 +16,14 @@ export class Voice {
     client: KoalaClient
   ) {
     if (oldState.channel || !newState.channelId) return;
+
+    const enabled = await koala.db.voiceEnabled(
+      newState.guild.id,
+      newState.channelId
+    );
+
+    if (!enabled) return;
+
     koala.queue.addToVoiceQueue(`${newState.member?.displayName} joined`, {
       channelId: newState.channelId,
       guildId: newState.guild.id,
@@ -42,6 +50,13 @@ export class Voice {
       }
       return;
     }
+
+    const enabled = await koala.db.voiceEnabled(
+      oldState.guild.id,
+      oldState.channelId
+    );
+
+    if (!enabled) return;
 
     koala.queue.addToVoiceQueue(`${oldState.member?.displayName} left`, {
       channelId: oldState.channelId,

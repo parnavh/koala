@@ -3,6 +3,7 @@ import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import { Queue } from "@/queue";
+import { Database } from "@/db";
 
 export const bot = new Client({
   // To use only guild command
@@ -56,6 +57,7 @@ bot.on("messageCreate", (message: Message) => {
 global.koala = {
   client: bot,
   queue: new Queue(),
+  db: new Database(),
 };
 
 async function run() {
