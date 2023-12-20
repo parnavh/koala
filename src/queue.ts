@@ -2,13 +2,18 @@ import { Queue as Bull, Job, Worker } from "bullmq";
 import IORedis from "ioredis";
 import { env } from "@/env";
 import { playText } from "@/events/voice/handler";
+import { AudioPlayer, createAudioPlayer } from "@discordjs/voice";
 
 type Voice = {
   queue: Bull<VoiceData>;
   worker: Worker<VoiceData>;
+  audioPlayer: AudioPlayer;
 };
 
-export type VoiceData = {};
+export type VoiceData = {
+  guildId: string;
+  channelId: string;
+};
 
 export class Queue {
   private voice: { [key: string]: Voice };
@@ -32,17 +37,25 @@ export class Queue {
     const queue = new Bull<VoiceData>(`voice-${guildId}`, {
       connection: this.connection,
     });
+
     const worker = new Worker<VoiceData>(`voice-${guildId}`, this.voiceWorker, {
       connection: this.connection,
     });
-    this.voice[guildId] = { queue, worker };
+    worker.on("failed", console.error);
+
+    const audioPlayer = createAudioPlayer();
+    this.voice[guildId] = { queue, worker, audioPlayer };
   }
 
-  async addToVoiceQueue(text: string, guildId: string) {
-    if (!this.voice[guildId]) {
-      this.addVoiceQueue(guildId);
+  getAudioPlayer(guildId: string) {
+    return this.voice[guildId].audioPlayer;
+  }
+
+  async addToVoiceQueue(text: string, options: VoiceData) {
+    if (!this.voice[options.guildId]) {
+      this.addVoiceQueue(options.guildId);
     }
-    const queue = this.voice[guildId].queue;
-    await queue.add(text, {});
+    const queue = this.voice[options.guildId].queue;
+    await queue.add(text, options);
   }
 }

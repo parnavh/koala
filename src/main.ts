@@ -53,7 +53,10 @@ bot.on("messageCreate", (message: Message) => {
   bot.executeCommand(message);
 });
 
-bot.queue = new Queue();
+global.koala = {
+  client: bot,
+  queue: new Queue(),
+};
 
 async function run() {
   // The following syntax should be used in the commonjs environment
