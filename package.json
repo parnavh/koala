@@ -6,13 +6,13 @@
   "type": "module",
   "main": "build/main.js",
   "scripts": {
-    "build": "tsc",
-    "build:changelog": "bunx @discordx/changelog --src src",
+    "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./build && tsc-esm-fix --target='build'",
+    "build:changelog": "npx @discordx/changelog --src src",
     "db:gen": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "dev": "npx tsx watch src/main.ts",
-    "start": "node build/main.js"
+    "start": "node ."
   },
   "dependencies": {
     "@discordjs/opus": "^0.9.0",
@@ -34,6 +34,8 @@
     "@types/node": "^20.5.9",
     "prettier": "^3.0.3",
     "ts-node": "^10.9.2",
+    "tsc-esm-fix": "^2.20.18",
+    "tscpaths": "^0.0.9",
     "typescript": "5.2.2"
   },
   "engines": {

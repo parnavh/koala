@@ -1,13 +1,16 @@
 import { dirname, importx } from "@discordx/importer";
 import type { Interaction, Message } from "discord.js";
-import { IntentsBitField } from "discord.js";
+import { ActivityType, IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import { Queue } from "@/queue";
 import { Database } from "@/db";
 
 export const bot = new Client({
   // To use only guild command
-  botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],
+  botGuilds:
+    process.env.NODE_ENV === "production"
+      ? undefined
+      : [(client) => client.guilds.cache.map((guild) => guild.id)],
 
   // Discord intents
   intents: [
@@ -39,9 +42,9 @@ bot.once("ready", async () => {
   // This is useful when moving from guild commands to global commands
   // It must only be executed once
   //
-  //  await bot.clearApplicationCommands(
-  //    ...bot.guilds.cache.map((g) => g.id)
-  //  );
+  // await bot.clearApplicationCommands(...bot.guilds.cache.map((g) => g.id));
+
+  bot.user?.setActivity("you waste time", { type: ActivityType.Watching });
 
   console.log("Bot started");
 });

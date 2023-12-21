@@ -5,3 +5,7 @@ services:
     command: node build/main.js
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
+      - REDIS_URL=${REDIS_URL}
+      - AZURE_SPEECH_KEY=${AZURE_SPEECH_KEY}
+      - AZURE_SPEECH_REGION=${AZURE_SPEECH_REGION}
+      - DATABASE_URL=${DATABASE_URL}
