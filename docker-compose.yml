@@ -1,7 +1,7 @@
 version: "3"
 services:
   app:
-    build: .
+    image: registry.gitlab.com/parnavh/koala
     command: node build/main.js
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
