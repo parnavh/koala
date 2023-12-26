@@ -36,10 +36,14 @@ COPY pnpm-lock.yaml .
 RUN npm install -g pnpm
 
 RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
-RUN apk add build-base
+RUN apk add --no-cache build-base ffmpeg
 
 # Install dependencies
 RUN pnpm install --production --frozen-lockfile
+
+# Generate prisma client
+COPY prisma ./prisma
+RUN pnpm run db:gen
 
 # Move build files
 COPY --from=build-runner /tmp/app/build /app/build

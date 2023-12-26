@@ -12,6 +12,7 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "dev": "npx tsx watch src/main.ts",
+    "postinstall": "npm run db:gen",
     "start": "node ."
   },
   "dependencies": {

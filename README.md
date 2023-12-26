@@ -5,16 +5,16 @@ A utility discord bot
 ## 🏗 Development
 
 ```
-bun install
-bun dev
+pnpm install
+pnpm dev
 ```
 
 ## 💻 Production
 
 ```
-bun install --production
-bun build
-bun start
+pnpm install
+pnpm build
+pnpm start
 ```
 
 ## 🐋 Docker
