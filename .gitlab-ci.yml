@@ -19,3 +19,7 @@ docker-build:
         docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
         docker push "$CI_REGISTRY_IMAGE:latest"
       fi
+
+  rules:
+    - changes:
+        - "**/*.ts"
