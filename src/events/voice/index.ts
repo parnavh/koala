@@ -47,6 +47,8 @@ export class Voice {
           connection.disconnect();
           connection.destroy();
         }
+
+        koala.queue.destroyVoiceQueue(oldState.guild.id);
       }
       return;
     }

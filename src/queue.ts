@@ -58,4 +58,13 @@ export class Queue {
     const queue = this.voice[options.guildId].queue;
     await queue.add(text, options);
   }
+
+  destroyVoiceQueue(guildId: string) {
+    if (!this.voice[guildId]) {
+      return;
+    }
+    this.voice[guildId].queue.obliterate({ force: true });
+    this.voice[guildId].worker.close(true);
+    delete this.voice[guildId];
+  }
 }
