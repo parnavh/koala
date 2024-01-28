@@ -1,4 +1,8 @@
-import { createAudioResource, joinVoiceChannel } from "@discordjs/voice";
+import {
+  AudioPlayerStatus,
+  createAudioResource,
+  joinVoiceChannel,
+} from "@discordjs/voice";
 import { createHash } from "crypto";
 import { createReadStream, existsSync, mkdirSync } from "fs";
 import sdk from "microsoft-cognitiveservices-speech-sdk";
@@ -36,15 +40,19 @@ async function createAudioFile(text: string, hash: string) {
   });
 }
 
-export async function playText(text: string, options: VoiceData) {
-  const hash = createHash("sha256").update(text).digest("hex");
+const sanitizeText = (text: string) => text.replace(/[^\w\d]+/g, " ");
+
+export async function playText(rawText: string, options: VoiceData) {
+  const sanitizedText = sanitizeText(rawText);
+
+  const hash = createHash("sha256").update(sanitizedText).digest("hex");
 
   if (!existsSync(BASE_PATH)) {
     mkdirSync(BASE_PATH, { recursive: true });
   }
 
   if (!existsSync(`${BASE_PATH}/${hash}.ogg`)) {
-    await createAudioFile(text, hash);
+    await createAudioFile(sanitizedText, hash);
   }
 
   const audioResource = createAudioResource(
@@ -71,4 +79,20 @@ export async function playText(text: string, options: VoiceData) {
   audioPlayer.play(audioResource);
 
   connection.subscribe(audioPlayer);
+
+  return new Promise<void>((resolve, reject) => {
+    const errorAction = () => {
+      audioPlayer.removeListener(AudioPlayerStatus.Idle, idleAction);
+      reject();
+    };
+
+    const idleAction = () => {
+      audioPlayer.removeListener("error", errorAction);
+      resolve();
+    };
+
+    audioPlayer.once("error", errorAction);
+
+    audioPlayer.once(AudioPlayerStatus.Idle, idleAction);
+  });
 }

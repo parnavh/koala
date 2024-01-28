@@ -27,7 +27,7 @@ export class Queue {
   }
 
   private async voiceWorker(job: Job<VoiceData>) {
-    playText(job.name, job.data);
+    await playText(job.name, job.data);
   }
 
   private addVoiceQueue(guildId: string) {
