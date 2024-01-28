@@ -1,11 +1,20 @@
-import { type ArgsOf, Discord, On, Guard } from "discordx";
-import { NotBot } from "./guards";
+import { type ArgsOf, Discord, On, Guard, GuardFunction } from "discordx";
 import { getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import type { VoiceState } from "discord.js";
 
 function getVoiceMemberCount(state: VoiceState) {
   return state.channel!.members.filter((m) => !m.user.bot).size;
 }
+
+const NotBot: GuardFunction<ArgsOf<"voiceStateUpdate">> = async (
+  [oldState, newState],
+  _,
+  next
+) => {
+  if (!newState.member?.user.bot || !oldState.member?.user.bot) {
+    await next();
+  }
+};
 
 @Discord()
 export class Voice {

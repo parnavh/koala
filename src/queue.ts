@@ -1,7 +1,7 @@
 import { Queue as Bull, Job, Worker } from "bullmq";
 import IORedis from "ioredis";
 import { env } from "@/env";
-import { playText } from "@/events/voice/handler";
+import { playText } from "@/lib/voice/handler";
 import { AudioPlayer, createAudioPlayer } from "@discordjs/voice";
 
 type Voice = {
