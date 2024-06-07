@@ -2,20 +2,26 @@ version: "3"
 services:
   app:
     image: registry.gitlab.com/parnavh/koala
-    command: node build/main.js
-    environment:
-      - BOT_TOKEN=${BOT_TOKEN}
-      - REDIS_URL=${REDIS_URL}
-      - AZURE_SPEECH_KEY=${AZURE_SPEECH_KEY}
-      - AZURE_SPEECH_REGION=${AZURE_SPEECH_REGION}
-      - DATABASE_URL=${DATABASE_URL}
-      - NODE_ENV=${NODE_ENV}
+    env_file:
+      - .env
     restart: always
     volumes:
       - ./tmp:/app/tmp
+    depends_on:
+      - redis
+      - postgres
 
-  watchtower:
-    image: containrrr/watchtower
+  redis:
+    image: redis
+    restart: always
+
+  postgres:
+    image: postgres
+    restart: always
+    env_file:
+      - .env
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30 --log-level warn
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

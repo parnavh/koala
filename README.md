@@ -2,16 +2,22 @@
 
 A utility discord bot
 
+## 🛠 Setup
+
+```bash
+cp .env.example .env  # Replace placeholder values with your own
+```
+
 ## 🏗 Development
 
-```
+```bash
 pnpm install
 pnpm dev
 ```
 
-## 💻 Production
+## 🚀 Production
 
-```
+```bash
 pnpm install
 pnpm build
 pnpm start
@@ -21,18 +27,18 @@ pnpm start
 
 To start the application:
 
-```
-docker-compose up -d
+```bash
+docker compose up -d
 ```
 
 To shut down your application:
 
-```
-docker-compose down
+```bash
+docker compose down
 ```
 
 To view your application's logs:
 
-```
-docker-compose logs
+```bash
+docker compose logs
 ```
