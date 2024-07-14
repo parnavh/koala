@@ -1,5 +1,13 @@
-version: "3"
 services:
+  init-db:
+    image: registry.gitlab.com/parnavh/koala
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: pnpm run db:push
+
   app:
     image: registry.gitlab.com/parnavh/koala
     env_file:
@@ -8,12 +16,23 @@ services:
     volumes:
       - ./tmp:/app/tmp
     depends_on:
-      - redis
-      - postgres
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
 
   redis:
     image: redis
     restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 90s
+      timeout: 10s
+      start_period: 5s
+      start_interval: 10s
+      retries: 5
 
   postgres:
     image: postgres
@@ -22,6 +41,13 @@ services:
       - .env
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 90s
+      timeout: 10s
+      start_period: 5s
+      start_interval: 10s
+      retries: 5
 
 volumes:
   db-data:
