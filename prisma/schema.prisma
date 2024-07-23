@@ -8,13 +8,27 @@ datasource db {
 }
 
 model Config {
-  guildId       BigInt         @id
-  voiceEnabled  Boolean
-  voiceChannels VoiceChannel[]
+  guildId BigInt @id
+
+  voice VoiceConfig?
+}
+
+model VoiceConfig {
+  guildId      BigInt             @id @unique
+  enabled      Boolean
+  announce     Boolean
+  announceMode VoiceAnnounceModes
+
+  config Config @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
 }
 
 model VoiceChannel {
   id      BigInt @id
   guildId BigInt
-  config  Config @relation(fields: [guildId], references: [guildId])
+}
+
+enum VoiceAnnounceModes {
+  GLOBAL
+  ENABLE
+  DISABLE
 }
