@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 
-// TODO implement caching
 export class Database {
   private prisma: PrismaClient;
 
@@ -8,27 +7,62 @@ export class Database {
     this.prisma = new PrismaClient();
   }
 
-  async voiceEnabled(guildId: string, channelId: string) {
+  async voiceEnable(guildId: string) {
     const guildIdBigInt = BigInt(guildId);
-    const channelIdBigInt = BigInt(channelId);
 
-    const guild = await this.prisma.config.findUnique({
-      where: { guildId: guildIdBigInt },
-      include: { voiceChannels: true },
+    await this.prisma.config.upsert({
+      where: {
+        guildId: guildIdBigInt,
+      },
+      create: {
+        guildId: guildIdBigInt,
+      },
+      update: {},
     });
 
-    if (!guild || !guild.voiceEnabled) {
+    await this.prisma.voiceConfig.upsert({
+      where: {
+        guildId: guildIdBigInt,
+      },
+      create: {
+        guildId: guildIdBigInt,
+        enabled: true,
+      },
+      update: {
+        enabled: true,
+      },
+    });
+  }
+
+  async voiceDisable(guildId: string) {
+    if (!this.isVoiceEnabled(guildId)) {
+      return false;
+    }
+    const guildIdBigInt = BigInt(guildId);
+
+    await this.prisma.voiceConfig.update({
+      where: {
+        guildId: guildIdBigInt,
+      },
+      data: {
+        enabled: false,
+      },
+    });
+  }
+
+  async isVoiceEnabled(guildId: string) {
+    const guildIdBigInt = BigInt(guildId);
+
+    const config = await this.prisma.voiceConfig.findUnique({
+      where: {
+        guildId: guildIdBigInt,
+      },
+    });
+
+    if (!config || !config.enabled) {
       return false;
     }
 
-    if (guild.voiceChannels.length === 0) {
-      return true;
-    }
-
-    if (guild.voiceChannels.find((c) => c.id === channelIdBigInt)) {
-      return true;
-    }
-
-    return false;
+    return true;
   }
 }

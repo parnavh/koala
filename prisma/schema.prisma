@@ -15,9 +15,9 @@ model Config {
 
 model VoiceConfig {
   guildId      BigInt             @id @unique
-  enabled      Boolean
-  announce     Boolean
-  announceMode VoiceAnnounceModes
+  enabled      Boolean            @default(false)
+  announce     Boolean            @default(false)
+  announceMode VoiceAnnounceModes @default(GLOBAL)
 
   config Config @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
 }
