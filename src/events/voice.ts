@@ -9,7 +9,7 @@ function getVoiceMemberCount(state: VoiceState) {
 const NotBot: GuardFunction<ArgsOf<"voiceStateUpdate">> = async (
   [oldState, newState],
   _,
-  next
+  next,
 ) => {
   if (!newState.member?.user.bot || !oldState.member?.user.bot) {
     await next();
@@ -22,13 +22,13 @@ export class Voice {
   @Guard(NotBot)
   async userJoin(
     [oldState, newState]: ArgsOf<"voiceStateUpdate">,
-    client: KoalaClient
+    client: KoalaClient,
   ) {
     if (oldState.channel || !newState.channelId) return;
 
-    const enabled = await koala.db.voiceEnabled(
+    const enabled = await koala.db.isVoiceAnnounceEnabled(
       newState.guild.id,
-      newState.channelId
+      newState.channelId,
     );
 
     if (!enabled) return;
@@ -43,7 +43,7 @@ export class Voice {
   @Guard(NotBot)
   async userLeave(
     [oldState, newState]: ArgsOf<"voiceStateUpdate">,
-    client: KoalaClient
+    client: KoalaClient,
   ) {
     if (!oldState.channelId || newState.channel) return;
 
@@ -62,9 +62,9 @@ export class Voice {
       return;
     }
 
-    const enabled = await koala.db.voiceEnabled(
+    const enabled = await koala.db.isVoiceAnnounceEnabled(
       oldState.guild.id,
-      oldState.channelId
+      oldState.channelId,
     );
 
     if (!enabled) return;
@@ -79,7 +79,7 @@ export class Voice {
   @Guard(NotBot)
   userMove(
     [oldState, newState]: ArgsOf<"voiceStateUpdate">,
-    client: KoalaClient
+    client: KoalaClient,
   ) {
     if (!oldState.channelId || !newState.channelId) return;
     if (oldState.channelId === newState.channelId) return;
