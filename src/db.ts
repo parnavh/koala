@@ -209,10 +209,14 @@ export class Database {
     throw new Error("This should not be reached");
   }
 
-  async voiceAnnounceChannelEnable(guildId: string, channelIds: string[]) {
+  async setVoiceAnnounceChannel(guildId: string, channelIds: string[]) {
     const guildIdBigInt = BigInt(guildId);
 
-    await this.voiceAnnounceEnable(guildId, "ENABLE");
+    await this.prisma.voiceChannel.deleteMany({
+      where: {
+        guildId: guildIdBigInt,
+      },
+    });
 
     await this.prisma.voiceChannel.createMany({
       data: channelIds.map((id) => ({
@@ -222,16 +226,14 @@ export class Database {
     });
   }
 
-  async voiceAnnounceChannelDisable(guildId: string, channelIds: string[]) {
-    const guildIdBigInt = BigInt(guildId);
-
-    await this.voiceAnnounceEnable(guildId, "DISABLE");
-
-    await this.prisma.voiceChannel.createMany({
-      data: channelIds.map((id) => ({
-        guildId: guildIdBigInt,
-        id: BigInt(id),
-      })),
+  async getVoiceConfig(guildId: string) {
+    return this.prisma.voiceConfig.findUnique({
+      where: {
+        guildId: BigInt(guildId),
+      },
+      include: {
+        channels: true,
+      },
     });
   }
 }

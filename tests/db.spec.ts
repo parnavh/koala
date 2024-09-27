@@ -45,7 +45,7 @@ describe("voice config", () => {
     const res1 = await db.isVoiceAnnounceEnabled(guildId, "100");
     expect(res1).toBe(false);
 
-    await db.voiceAnnounceChannelEnable(guildId, channels);
+    await db.setVoiceAnnounceChannel(guildId, channels);
     const res2 = await db.isVoiceAnnounceEnabled(guildId, "100");
     const res3 = await db.isVoiceAnnounceEnabled(guildId, "99");
     expect(res2).toBe(true);
@@ -58,9 +58,11 @@ describe("voice config", () => {
     const res1 = await db.isVoiceAnnounceEnabled(guildId, "100");
     expect(res1).toBe(true);
 
-    await db.voiceAnnounceChannelDisable(guildId, channels);
+    await db.setVoiceAnnounceChannel(guildId, channels);
     const res2 = await db.isVoiceAnnounceEnabled(guildId, "100");
+    const res3 = await db.isVoiceAnnounceEnabled(guildId, "99");
     expect(res2).toBe(false);
+    expect(res3).toBe(true);
   });
 
   it("disable announce", async () => {
