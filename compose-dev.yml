@@ -1,0 +1,31 @@
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 90s
+      timeout: 10s
+      start_period: 5s
+      start_interval: 10s
+      retries: 5
+
+  postgres:
+    image: postgres
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 90s
+      timeout: 10s
+      start_period: 5s
+      start_interval: 10s
+      retries: 5
+
+volumes:
+  db-data:

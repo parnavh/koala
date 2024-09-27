@@ -11,7 +11,7 @@
     "db:gen": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "dev": "npx tsx watch src/main.ts",
+    "dev": "tsx watch src/main.ts",
     "postinstall": "npm run db:gen",
     "start": "node ."
   },
@@ -37,6 +37,7 @@
     "ts-node": "^10.9.2",
     "tsc-esm-fix": "^2.20.18",
     "tscpaths": "^0.0.9",
+    "tsx": "^4.19.1",
     "typescript": "5.2.2",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.0.3"
