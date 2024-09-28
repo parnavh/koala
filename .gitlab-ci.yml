@@ -1,24 +1,23 @@
 stages:
-  - publish
+  - publish_main
   - release
 
-# Publish Docker images on every push to any branch
-publish:
-  stage: publish
+# Publish Docker images on the main branch
+publish_main:
+  stage: publish_main
   image: docker:cli
   services:
     - docker:dind
+  tags:
+    - saas-linux-medium-amd64
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
     - echo "Building and pushing Docker image for branch $CI_COMMIT_REF_NAME"
     - docker buildx create --use
     - docker buildx build --platform linux/amd64,linux/arm64 -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" . --push
-    - |
-      if [ "$CI_COMMIT_REF_NAME" == "main" ]; then
-        echo "Tagging the main branch image as latest"
-        docker buildx build --platform linux/amd64,linux/arm64 -t "$CI_REGISTRY_IMAGE:latest" . --push
-      fi
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
 
 # Runs when a release is created
 release:
@@ -26,11 +25,16 @@ release:
   image: docker:cli
   services:
     - docker:dind
+  tags:
+    - saas-linux-medium-amd64
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
     - echo "Building and pushing Docker image for release $CI_COMMIT_TAG"
     - docker buildx create --use
     - docker buildx build --platform linux/amd64,linux/arm64 -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" . --push
+    - echo "Tagging release image as latest"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
   rules:
     - if: $CI_COMMIT_TAG && $CI_PIPELINE_SOURCE == "release"
