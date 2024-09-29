@@ -6,8 +6,14 @@ export const env = createEnv({
     BOT_TOKEN: z.string(),
     DATABASE_URL: z.string(),
     REDIS_URL: z.string(),
-    AZURE_SPEECH_KEY: z.string(),
-    AZURE_SPEECH_REGION: z.string(),
+    GCP_KEY: z.string().transform((str, ctx) => {
+      try {
+        return JSON.parse(str);
+      } catch (e) {
+        ctx.addIssue({ code: "custom", message: "Invalid JSON" });
+        return z.NEVER;
+      }
+    }),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

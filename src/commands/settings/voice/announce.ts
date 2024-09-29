@@ -152,6 +152,7 @@ export class VoiceSettings {
       );
 
     interaction.reply({
+      ephemeral: true,
       components: [row],
       content: `Pick the channels you want to ${
         config?.announceMode == "ENABLE" ? "enable" : "disable"
