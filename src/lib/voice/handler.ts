@@ -9,6 +9,7 @@ import textToSpeech from "@google-cloud/text-to-speech";
 import { env } from "@/env";
 import { VoiceData } from "@/queue";
 import { writeFile } from "fs/promises";
+import { BaseGuildVoiceChannel, Guild } from "discord.js";
 
 const speechClient = new textToSpeech.TextToSpeechClient({
   credentials: env.GCP_KEY,
@@ -39,10 +40,42 @@ async function createAudioFile(text: string, hash: string) {
 
 const sanitizeText = (text: string) => text.replace(/[^\w\d]+/g, " ");
 
+function isVoiceChannelEmpty(guild: Guild, channelId: string) {
+  const channel = guild.channels.cache.find((channel) => {
+    return channel.id == channelId;
+  }) as BaseGuildVoiceChannel;
+
+  if (!channel) {
+    console.warn(
+      `ghost guild voice channel [guild: ${guild.id}  channelId: ${channelId}]`,
+    );
+    return true;
+  }
+
+  if (channel.members.filter((m) => !m.user.bot).size == 0) {
+    return true;
+  }
+
+  return false;
+}
+
 export async function playText(rawText: string, options: VoiceData) {
   const sanitizedText = sanitizeText(rawText);
 
   const hash = createHash("sha256").update(sanitizedText).digest("hex");
+
+  const guild = global.koala.client.guilds.cache.find(
+    (guild) => guild.id === options.guildId,
+  );
+
+  if (!guild) {
+    console.error("No guild found while trying to play audio");
+    return;
+  }
+
+  if (isVoiceChannelEmpty(guild, options.channelId)) {
+    return;
+  }
 
   if (!existsSync(BASE_PATH)) {
     mkdirSync(BASE_PATH, { recursive: true });
@@ -56,19 +89,14 @@ export async function playText(rawText: string, options: VoiceData) {
     createReadStream(`${BASE_PATH}/${hash}.ogg`),
   );
 
-  const adapterCreator = global.koala.client.guilds.cache.find(
-    (guild) => guild.id === options.guildId,
-  )?.voiceAdapterCreator;
-
-  if (!adapterCreator) {
-    console.error("No guild found while trying to play audio");
+  if (isVoiceChannelEmpty(guild, options.channelId)) {
     return;
   }
 
   const connection = joinVoiceChannel({
     channelId: options.channelId,
     guildId: options.guildId,
-    adapterCreator,
+    adapterCreator: guild.voiceAdapterCreator,
   });
 
   const audioPlayer = koala.queue.getAudioPlayer(options.guildId);

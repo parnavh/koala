@@ -57,7 +57,7 @@ export class Voice {
           connection.destroy();
         }
 
-        koala.queue.destroyVoiceQueue(oldState.guild.id);
+        await koala.queue.destroyVoiceQueue(oldState.guild.id);
       }
       return;
     }
@@ -96,5 +96,17 @@ export class Voice {
       }
       return;
     }
+  }
+
+  @On({ event: "voiceStateUpdate" })
+  async botDisconnected(
+    [oldState, newState]: ArgsOf<"voiceStateUpdate">,
+    client: KoalaClient,
+  ) {
+    if (!oldState.channelId || newState.channel) return;
+    if (!oldState.member || !client.user) return;
+    if (oldState.member.id !== client.user.id) return;
+
+    await koala.queue.destroyVoiceQueue(oldState.guild.id);
   }
 }

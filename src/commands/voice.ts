@@ -43,15 +43,15 @@ export class VoiceCommands {
         content: "You need to be in a voice channel to use this command",
       });
 
-    koala.queue.addToVoiceQueue(text, {
-      channelId: voiceChannelId,
-      guildId: interaction.guild.id,
-    });
-
     interaction.reply({
       ephemeral: true,
       content: `Speaking: ${text}`,
       allowedMentions: {},
+    });
+
+    koala.queue.addToVoiceQueue(text, {
+      channelId: voiceChannelId,
+      guildId: interaction.guild.id,
     });
   }
 }

@@ -56,15 +56,21 @@ export class Queue {
       this.addVoiceQueue(options.guildId);
     }
     const queue = this.voice[options.guildId].queue;
-    await queue.add(text, options);
+    await queue.add(text, options, {
+      removeOnComplete: true,
+      removeOnFail: true,
+    });
   }
 
-  destroyVoiceQueue(guildId: string) {
+  async destroyVoiceQueue(guildId: string) {
     if (!this.voice[guildId]) {
       return;
     }
-    this.voice[guildId].queue.obliterate({ force: true });
-    this.voice[guildId].worker.close(true);
+    const { queue, worker, audioPlayer } = this.voice[guildId];
+
+    audioPlayer.stop();
+    await worker.close(true);
+    await queue.obliterate({ force: true });
     delete this.voice[guildId];
   }
 }
