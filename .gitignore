@@ -1,6 +1,7 @@
 # files
 .env
 .env.local
+.envrc
 
 # folders
 build

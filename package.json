@@ -6,7 +6,7 @@
   "type": "module",
   "main": "build/main.js",
   "scripts": {
-    "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./build && tsc-esm-fix --target='build'",
+    "build": "tsc --project tsconfig.build.json && tscpaths -p tsconfig.build.json -s ./src -o ./build && tsc-esm-fix --target='build'",
     "build:changelog": "npx @discordx/changelog --src src",
     "db:gen": "prisma generate",
     "db:push": "prisma db push",
