@@ -1,5 +1,4 @@
 import { Database } from "@/db";
-import exp from "constants";
 import { describe, beforeEach, it, expect } from "vitest";
 
 const db = new Database();
@@ -8,8 +7,6 @@ const channels = ["100", "101", "102"];
 
 describe("voice config", () => {
   beforeEach(async () => {
-    await db.initConfig(guildId);
-
     return async () => {
       await db.deleteConfig(guildId);
     };

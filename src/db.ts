@@ -7,27 +7,16 @@ export class Database {
     this.prisma = new PrismaClient();
   }
 
-  async initConfig(guildId: string) {
-    const guildIdBigInt = BigInt(guildId);
-
-    await this.prisma.config.create({
-      data: {
-        guildId: guildIdBigInt,
-        voice: {
-          create: {},
-        },
-      },
-    });
-  }
-
   async deleteConfig(guildId: string) {
     const guildIdBigInt = BigInt(guildId);
 
-    await this.prisma.config.delete({
-      where: {
-        guildId: guildIdBigInt,
-      },
-    });
+    await this.prisma.config
+      .delete({
+        where: {
+          guildId: guildIdBigInt,
+        },
+      })
+      .catch(() => {});
   }
 
   async voiceEnable(guildId: string) {
@@ -98,27 +87,31 @@ export class Database {
   ) {
     const guildIdBigInt = BigInt(guildId);
 
-    const config = await this.prisma.voiceConfig.findUnique({
+    await this.prisma.config.upsert({
       where: {
         guildId: guildIdBigInt,
       },
-    });
-
-    if (!config) {
-      this.initConfig(guildId);
-    }
-
-    await this.prisma.voiceConfig.update({
-      where: {
-        guildId: guildIdBigInt,
+      update: {
+        voice: {
+          update: {
+            enabled: true,
+            announce: true,
+            announceMode: mode,
+            channels: {
+              deleteMany: {
+                guildId: guildIdBigInt,
+              },
+            },
+          },
+        },
       },
-      data: {
-        enabled: true,
-        announce: true,
-        announceMode: mode,
-        channels: {
-          deleteMany: {
-            guildId: guildIdBigInt,
+      create: {
+        guildId: guildIdBigInt,
+        voice: {
+          create: {
+            enabled: true,
+            announce: true,
+            announceMode: mode,
           },
         },
       },
