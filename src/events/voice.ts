@@ -22,7 +22,7 @@ export class Voice {
   @Guard(NotBot)
   async userJoin(
     [oldState, newState]: ArgsOf<"voiceStateUpdate">,
-    client: KoalaClient,
+    _: KoalaClient,
   ) {
     if (oldState.channel || !newState.channelId) return;
 
@@ -33,10 +33,21 @@ export class Voice {
 
     if (!enabled) return;
 
-    koala.queue.addToVoiceQueue(`${newState.member?.displayName} joined`, {
-      channelId: newState.channelId,
-      guildId: newState.guild.id,
-    });
+    let message = `${newState.member?.displayName} joined`;
+    let delay = 0;
+    let channelId = newState.channelId;
+
+    if (getVoiceMemberCount(newState) == 1) {
+      message = `Welcome ${newState.member?.displayName}!`;
+      delay = 2000;
+    }
+
+    setTimeout(() => {
+      koala.queue.addToVoiceQueue(message, {
+        channelId: channelId,
+        guildId: newState.guild.id,
+      });
+    }, delay);
   }
 
   @On({ event: "voiceStateUpdate" })
