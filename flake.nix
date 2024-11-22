@@ -4,10 +4,18 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
-      in {
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      {
 
         packages.default = pkgs.writeScriptBin "start" ''
           #!/bin/bash
@@ -22,8 +30,23 @@
         };
 
         devShells.default = pkgs.mkShell {
-          packages = [ pkgs.nodejs_20 pkgs.pnpm_9 pkgs.python3 pkgs.ffmpeg ];
+          buildInputs = with pkgs; [
+            ffmpeg
+            gnumake
+            nodePackages.prisma
+            nodejs_20
+            openssl
+            pnpm_9
+            python3
+          ];
+          shellHook = with pkgs; ''
+            export PRISMA_SCHEMA_ENGINE_BINARY="${prisma-engines}/bin/schema-engine"
+            export PRISMA_QUERY_ENGINE_BINARY="${prisma-engines}/bin/query-engine"
+            export PRISMA_QUERY_ENGINE_LIBRARY="${prisma-engines}/lib/libquery_engine.node"
+            export PRISMA_INTROSPECTION_ENGINE_BINARY="${prisma-engines}/bin/introspection-engine"
+            export PRISMA_FMT_BINARY="${prisma-engines}/bin/prisma-fmt"
+          '';
         };
-
-      });
+      }
+    );
 }

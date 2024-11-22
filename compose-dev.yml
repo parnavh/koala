@@ -13,8 +13,9 @@ services:
 
   postgres:
     image: postgres
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=replaceme
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
