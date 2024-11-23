@@ -35,3 +35,8 @@ enum VoiceAnnounceModes {
   ENABLE
   DISABLE
 }
+
+model GuildMetrics {
+  guildId         BigInt @id @unique
+  voiceCharacters Int
+}

@@ -82,6 +82,7 @@ export async function playText(rawText: string, options: VoiceData) {
   }
 
   if (!existsSync(`${BASE_PATH}/${hash}.ogg`)) {
+    koala.db.metricsCharactersIncreament(options.guildId, sanitizedText.length);
     await createAudioFile(sanitizedText, hash);
   }
 

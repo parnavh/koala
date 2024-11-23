@@ -229,4 +229,45 @@ export class Database {
       },
     });
   }
+
+  async deleteMetrics(guildId: string) {
+    const guildIdBigInt = BigInt(guildId);
+
+    await this.prisma.guildMetrics
+      .delete({
+        where: {
+          guildId: guildIdBigInt,
+        },
+      })
+      .catch(() => {});
+  }
+
+  async metricsCharactersIncreament(guildId: string, value: number) {
+    const guildIdBigInt = BigInt(guildId);
+
+    const result = await this.prisma.guildMetrics.upsert({
+      where: { guildId: guildIdBigInt },
+      update: {
+        voiceCharacters: { increment: value },
+      },
+      create: {
+        guildId: guildIdBigInt,
+        voiceCharacters: value,
+      },
+    });
+  }
+
+  async getMetricsCharacters(guildId: string) {
+    const guildIdBigInt = BigInt(guildId);
+
+    const result = await this.prisma.guildMetrics.findFirst({
+      where: {
+        guildId: guildIdBigInt,
+      },
+    });
+
+    if (!result) return 0;
+
+    return result.voiceCharacters;
+  }
 }

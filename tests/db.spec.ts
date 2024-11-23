@@ -69,3 +69,17 @@ describe("voice config", () => {
     expect(result).toBe(false);
   });
 });
+
+describe("guild metrics", () => {
+  beforeEach(async () => {
+    return async () => {
+      await db.deleteMetrics(guildId);
+    };
+  });
+
+  it("add voice character usage", async () => {
+    await db.metricsCharactersIncreament(guildId, 200);
+    const result = await db.getMetricsCharacters(guildId);
+    expect(result).toBe(200);
+  });
+});
