@@ -1,3 +1,4 @@
+import { PermissionGuard } from "@discordx/utilities";
 import {
   ActionRowBuilder,
   ApplicationCommandOptionType,
@@ -10,6 +11,7 @@ import {
 } from "discord.js";
 import {
   Discord,
+  Guard,
   SelectMenuComponent,
   Slash,
   SlashChoice,
@@ -26,6 +28,12 @@ import {
 @SlashGroup("announce", "settings")
 export class VoiceSettings {
   @Slash({ description: "Enable announcement in voice channels" })
+  @Guard(
+    PermissionGuard(["ManageGuild"], {
+      content: "You cannot use this command!",
+      ephemeral: true,
+    }),
+  )
   async enable(
     @SlashChoice({ name: "In all channels", value: "GLOBAL" })
     @SlashChoice({ name: "In a few select channels", value: "ENABLE" })
@@ -62,6 +70,12 @@ export class VoiceSettings {
   }
 
   @Slash({ description: "Disable announcement in voice channels" })
+  @Guard(
+    PermissionGuard(["ManageGuild"], {
+      content: "You cannot use this command!",
+      ephemeral: true,
+    }),
+  )
   async disable(interaction: CommandInteraction) {
     if (!interaction.guild || !interaction.guildId) {
       return void interaction.reply({
@@ -108,6 +122,12 @@ export class VoiceSettings {
   }
 
   @Slash({ description: "Enable announcement in voice channels" })
+  @Guard(
+    PermissionGuard(["ManageGuild"], {
+      content: "You cannot use this command!",
+      ephemeral: true,
+    }),
+  )
   async channels(interaction: CommandInteraction) {
     if (!interaction.guild || !interaction.guildId) {
       return interaction.reply({

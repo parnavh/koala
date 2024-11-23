@@ -20,6 +20,7 @@
     "@discordjs/voice": "^0.16.1",
     "@discordx/importer": "^1.2.3",
     "@discordx/pagination": "^3.4.1",
+    "@discordx/utilities": "^7.0.3",
     "@google-cloud/text-to-speech": "^5.4.0",
     "@prisma/client": "5.22.0",
     "@t3-oss/env-core": "^0.7.1",

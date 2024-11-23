@@ -20,6 +20,9 @@ importers:
       '@discordx/pagination':
         specifier: ^3.4.1
         version: 3.5.0(discord.js@14.14.1)
+      '@discordx/utilities':
+        specifier: ^7.0.3
+        version: 7.0.3(discord.js@14.14.1)(discordx@11.9.0(discord.js@14.14.1))
       '@google-cloud/text-to-speech':
         specifier: ^5.4.0
         version: 5.4.0
@@ -145,6 +148,13 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     peerDependencies:
       discord.js: '>=14 || ^14.0.0-dev'
+
+  '@discordx/utilities@7.0.3':
+    resolution: {integrity: sha512-/8BPV6p436urT3XMcm5yxrEyXk6WmTL0HFbcba2m2ZtIvPNQ4eqrOeqrnjxaeWk8HdOQ3sPtzAQTa4HrQScK0w==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    peerDependencies:
+      discord.js: '>=14 || ^14.0.0-dev'
+      discordx: '*'
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -956,6 +966,9 @@ packages:
   cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
     engines: {node: '>= 8'}
+
+  dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -2298,6 +2311,12 @@ snapshots:
       lodash: 4.17.21
       tslib: 2.6.2
 
+  '@discordx/utilities@7.0.3(discord.js@14.14.1)(discordx@11.9.0(discord.js@14.14.1))':
+    dependencies:
+      dayjs: 1.11.13
+      discord.js: 14.14.1
+      discordx: 11.9.0(discord.js@14.14.1)
+
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
 
@@ -2929,6 +2948,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  dayjs@1.11.13: {}
 
   debug@2.6.9:
     dependencies:

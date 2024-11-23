@@ -35,13 +35,21 @@ export class VoiceCommands {
       });
     }
 
-    const voiceChannelId = member.voice.channelId;
-
-    if (!voiceChannelId)
+    if (!member.voice.channel)
       return void interaction.reply({
         ephemeral: true,
         content: "You need to be in a voice channel to use this command",
       });
+
+    if (
+      member.voice.serverMute ||
+      !member.permissionsIn(member.voice.channel).has("Speak")
+    ) {
+      return void interaction.reply({
+        ephemeral: true,
+        content: "You do not have permission to speak :(",
+      });
+    }
 
     interaction.reply({
       ephemeral: true,
@@ -50,7 +58,7 @@ export class VoiceCommands {
     });
 
     koala.queue.addToVoiceQueue(text, {
-      channelId: voiceChannelId,
+      channelId: member.voice.channel.id,
       guildId: interaction.guild.id,
     });
   }

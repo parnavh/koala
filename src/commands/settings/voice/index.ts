@@ -1,5 +1,6 @@
+import { PermissionGuard } from "@discordx/utilities";
 import type { CommandInteraction } from "discord.js";
-import { Discord, Slash, SlashGroup } from "discordx";
+import { Discord, Guard, Slash, SlashGroup } from "discordx";
 
 @Discord()
 @SlashGroup({
@@ -10,6 +11,12 @@ import { Discord, Slash, SlashGroup } from "discordx";
 @SlashGroup("voice", "settings")
 export class VoiceSettings {
   @Slash({ description: "Enable Voice Module" })
+  @Guard(
+    PermissionGuard(["ManageGuild"], {
+      content: "You cannot use this command!",
+      ephemeral: true,
+    }),
+  )
   async enable(interaction: CommandInteraction) {
     if (!interaction.guildId) {
       return void interaction.reply({
@@ -27,6 +34,12 @@ export class VoiceSettings {
   }
 
   @Slash({ description: "Disable voice module" })
+  @Guard(
+    PermissionGuard(["ManageGuild"], {
+      content: "You cannot use this command!",
+      ephemeral: true,
+    }),
+  )
   async disable(interaction: CommandInteraction) {
     if (!interaction.guildId) {
       return void interaction.reply({
