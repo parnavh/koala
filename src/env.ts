@@ -14,6 +14,8 @@ export const env = createEnv({
         return z.NEVER;
       }
     }),
+    CUSTOM_INVITE_LINK: z.string().url().optional(),
+    PERMISSIONS_INTEGER: z.coerce.number(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
