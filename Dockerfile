@@ -17,6 +17,7 @@ RUN pnpm install
 ## Move source files
 COPY src ./src
 COPY tsconfig.json   .
+COPY tsconfig.build.json .
 
 ## Build project
 RUN pnpm run build
