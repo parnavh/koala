@@ -1,15 +1,15 @@
 services:
   init-db:
-    image: registry.gitlab.com/parnavh/koala
+    image: parnavh/koala
     env_file:
       - .env
     depends_on:
       postgres:
         condition: service_healthy
-    command: pnpm run db:push
+    command: pnpm prisma migrate deploy
 
   app:
-    image: registry.gitlab.com/parnavh/koala
+    image: parnavh/koala
     env_file:
       - .env
     restart: always

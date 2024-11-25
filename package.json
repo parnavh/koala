@@ -1,13 +1,12 @@
 {
   "name": "koala",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "license": "MIT",
   "type": "module",
   "main": "build/main.js",
   "scripts": {
     "build": "tsc --project tsconfig.build.json && tscpaths -p tsconfig.build.json -s ./src -o ./build && tsc-esm-fix --target='build'",
-    "build:changelog": "npx @discordx/changelog --src src",
     "db:gen": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
@@ -16,6 +15,7 @@
     "start": "node ."
   },
   "dependencies": {
+    "@changesets/cli": "^2.27.10",
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.16.1",
     "@discordx/importer": "^1.2.3",
