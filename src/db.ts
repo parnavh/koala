@@ -74,11 +74,11 @@ export class Database {
       },
     });
 
-    if (!config || !config.enabled) {
-      return false;
+    if (!config) {
+      return true;
     }
 
-    return true;
+    return config.enabled;
   }
 
   async voiceAnnounceEnable(
@@ -163,13 +163,10 @@ export class Database {
       },
     });
 
-    if (!config || !config.enabled || !config.announce) {
-      return false;
-    }
+    if (!config) return true;
+    if (!config.enabled || !config.announce) return false;
 
-    if (config.announceMode == "GLOBAL") {
-      return true;
-    }
+    if (config.announceMode == "GLOBAL") return true;
 
     if (config.announceMode == "ENABLE") {
       if (!channelId) {

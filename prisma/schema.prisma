@@ -15,8 +15,8 @@ model Config {
 
 model VoiceConfig {
   guildId      BigInt             @id @unique
-  enabled      Boolean            @default(false)
-  announce     Boolean            @default(false)
+  enabled      Boolean            @default(true)
+  announce     Boolean            @default(true)
   announceMode VoiceAnnounceModes @default(GLOBAL)
   channels     VoiceChannel[]
 

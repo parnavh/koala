@@ -25,9 +25,9 @@ describe("voice config", () => {
     expect(result).toBe(false);
   });
 
-  it("announce disabled by default", async () => {
+  it("announce enabled by default", async () => {
     const res = await db.isVoiceAnnounceEnabled(guildId, "100");
-    expect(res).toBe(false);
+    expect(res).toBe(true);
   });
 
   it("enable announce - global", async () => {

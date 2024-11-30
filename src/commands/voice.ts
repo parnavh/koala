@@ -7,7 +7,7 @@ import { Discord, Slash, SlashOption } from "discordx";
 @Discord()
 export class VoiceCommands {
   @Slash({ description: "text to speak in your voice channel" })
-  tts(
+  async tts(
     @SlashOption({
       description: "text to be spoken",
       name: "text",
@@ -16,7 +16,7 @@ export class VoiceCommands {
     })
     text: string,
     interaction: CommandInteraction,
-  ): void {
+  ) {
     if (!interaction.guild) {
       return void interaction.reply({
         ephemeral: true,
@@ -48,6 +48,13 @@ export class VoiceCommands {
       return void interaction.reply({
         ephemeral: true,
         content: "You do not have permission to speak :(",
+      });
+    }
+
+    if (!(await koala.db.isVoiceEnabled(member.guild.id))) {
+      return void interaction.reply({
+        ephemeral: true,
+        content: "Voice module is disabled for this server :(",
       });
     }
 
