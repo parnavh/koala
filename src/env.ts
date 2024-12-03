@@ -17,6 +17,10 @@ export const env = createEnv({
     CUSTOM_INVITE_LINK: z.string().url().optional(),
     PERMISSIONS_INTEGER: z.coerce.number(),
     SUPPORT_SERVER_LINK: z.string().url().optional(),
+    OWNER_SERVER_IDS: z.preprocess((s) => {
+      if (typeof s === "string") return s.split(",");
+      return [];
+    }, z.array(z.string())),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

@@ -21,7 +21,7 @@ export const bot = new Client({
   ],
 
   // Debug logs are disabled in silent mode
-  silent: false,
+  silent: process.env.NODE_ENV === "production" ? true : false,
 
   // Configuration for @SimpleCommand
   simpleCommand: {
@@ -31,7 +31,7 @@ export const bot = new Client({
 
 bot.once("ready", async () => {
   // Make sure all guilds are cached
-  // await bot.guilds.fetch();
+  await bot.guilds.fetch();
 
   // Synchronize applications commands with Discord
   await bot.initApplicationCommands();
