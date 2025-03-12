@@ -82,7 +82,13 @@ export async function playText(rawText: string, options: VoiceData) {
   }
 
   if (!existsSync(`${BASE_PATH}/${hash}.ogg`)) {
-    koala.db.metricsCharactersIncreament(options.guildId, sanitizedText.length);
+    guild.members.fetch().then((members) => {
+      koala.db.metricsUpdate(
+        options.guildId,
+        sanitizedText.length,
+        members.filter((m) => !m.user.bot).size,
+      );
+    });
     await createAudioFile(sanitizedText, hash);
   }
 

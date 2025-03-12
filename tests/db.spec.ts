@@ -77,9 +77,15 @@ describe("guild metrics", () => {
     };
   });
 
-  it("add voice character usage", async () => {
-    await db.metricsCharactersIncreament(guildId, 200);
-    const result = await db.getMetricsCharacters(guildId);
-    expect(result).toBe(200);
+  it("voice character usage", async () => {
+    await db.metricsUpdate(guildId, 200);
+    const result = await db.getMetrics(guildId);
+    expect(result?.voiceCharacters).toBe(200);
+  });
+
+  it("server member count", async () => {
+    await db.metricsUpdate(guildId, 30, 20);
+    const result = await db.getMetrics(guildId);
+    expect(result?.memberCount).toBe(20);
   });
 });

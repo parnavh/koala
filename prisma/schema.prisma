@@ -39,4 +39,5 @@ enum VoiceAnnounceModes {
 model GuildMetrics {
   guildId         BigInt @id @unique
   voiceCharacters Int
+  memberCount     Int    @default(0)
 }

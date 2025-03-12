@@ -239,22 +239,30 @@ export class Database {
       .catch(() => {});
   }
 
-  async metricsCharactersIncreament(guildId: string, value: number) {
+  async metricsUpdate(
+    guildId: string,
+    voiceCharacters: number,
+    memberCount: number = 0,
+  ) {
     const guildIdBigInt = BigInt(guildId);
 
     const result = await this.prisma.guildMetrics.upsert({
       where: { guildId: guildIdBigInt },
       update: {
-        voiceCharacters: { increment: value },
+        voiceCharacters: { increment: voiceCharacters },
+        memberCount,
       },
       create: {
         guildId: guildIdBigInt,
-        voiceCharacters: value,
+        voiceCharacters: voiceCharacters,
+        memberCount,
       },
     });
+
+    return result;
   }
 
-  async getMetricsCharacters(guildId: string) {
+  async getMetrics(guildId: string) {
     const guildIdBigInt = BigInt(guildId);
 
     const result = await this.prisma.guildMetrics.findFirst({
@@ -263,8 +271,8 @@ export class Database {
       },
     });
 
-    if (!result) return 0;
+    if (!result) return;
 
-    return result.voiceCharacters;
+    return result;
   }
 }
