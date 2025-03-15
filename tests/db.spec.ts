@@ -1,4 +1,5 @@
 import { Database } from "@/db";
+import { MaintenanceError } from "@/errors";
 import { describe, beforeEach, it, expect } from "vitest";
 
 const db = new Database();
@@ -87,5 +88,54 @@ describe("guild metrics", () => {
     await db.metricsUpdate(guildId, 30, 20);
     const result = await db.getMetrics(guildId);
     expect(result?.memberCount).toBe(20);
+  });
+});
+
+describe("global flags", () => {
+  beforeEach(async () => {
+    return async () => {
+      await db.clearMaintenanceMode();
+    };
+  });
+
+  it("set maintenance mode", async () => {
+    const init = await db.getMaintenanceMode();
+    expect(init).toBeFalsy();
+
+    await db.setMaintenanceMode(true);
+    const res1 = await db.getMaintenanceMode();
+    expect(res1).toBeTruthy();
+
+    await db.setMaintenanceMode(false);
+    const res2 = await db.getMaintenanceMode();
+    expect(res2).toBeFalsy();
+
+    await db.clearMaintenanceMode();
+    const res3 = await db.getMaintenanceMode();
+    expect(res3).toBeFalsy();
+  });
+
+  it("maintenance disables everything", async () => {
+    const init = await db.isVoiceAnnounceEnabled(guildId);
+    expect(init).toBeTruthy();
+
+    await db.setMaintenanceMode(true);
+    let res1 = await db.isVoiceEnabled(guildId);
+    res1 = res1 || (await db.isVoiceAnnounceEnabled(guildId));
+    expect(res1).toBeFalsy();
+
+    await db.setMaintenanceMode(false);
+    const res2 = await db.isVoiceAnnounceEnabled(guildId);
+    expect(res2).toBeTruthy();
+
+    await db.setMaintenanceMode(true);
+    expect(db.voiceEnable(guildId)).rejects.toThrowError(MaintenanceError);
+    expect(db.voiceDisable(guildId)).rejects.toThrowError(MaintenanceError);
+    expect(db.voiceAnnounceEnable(guildId, "GLOBAL")).rejects.toThrowError(
+      MaintenanceError,
+    );
+    expect(db.voiceAnnounceDisable(guildId)).rejects.toThrowError(
+      MaintenanceError,
+    );
   });
 });

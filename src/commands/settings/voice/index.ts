@@ -1,3 +1,4 @@
+import { MaintenanceError } from "@/errors";
 import { PermissionGuard } from "@discordx/utilities";
 import type { CommandInteraction } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup } from "discordx";
@@ -25,10 +26,17 @@ export class VoiceSettings {
       });
     }
 
-    await koala.db.voiceEnable(interaction.guildId);
+    let content = "Voice module has been enabled";
+
+    try {
+      await koala.db.voiceEnable(interaction.guildId);
+    } catch (e) {
+      if (e instanceof MaintenanceError) content = e.message;
+      else content = "Something went wrong, please try again later!";
+    }
 
     interaction.reply({
-      content: "Voice module has been enabled",
+      content,
       ephemeral: true,
     });
   }
@@ -48,10 +56,17 @@ export class VoiceSettings {
       });
     }
 
-    await koala.db.voiceDisable(interaction.guildId);
+    let content = "Voice module has been disabled";
+
+    try {
+      await koala.db.voiceDisable(interaction.guildId);
+    } catch (e) {
+      if (e instanceof MaintenanceError) content = e.message;
+      else content = "Something went wrong, please try again later!";
+    }
 
     interaction.reply({
-      content: "Voice module has been disabled",
+      content,
       ephemeral: true,
     });
   }

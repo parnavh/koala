@@ -58,4 +58,28 @@ export class SuperUserCommands {
       ephemeral: true,
     });
   }
+
+  @Slash({ description: "Manage maintenance mode" })
+  async maintenance(
+    @SlashChoice({ name: "Enable Maintenance mode", value: true })
+    @SlashChoice({ name: "Disable Maintenance mode", value: false })
+    @SlashOption({
+      name: "state",
+      description: "Set maintenance mode for bot",
+      type: ApplicationCommandOptionType.Boolean,
+      required: true,
+    })
+    state: boolean,
+    interaction: CommandInteraction,
+    client: KoalaClient,
+  ) {
+    interaction.deferReply({ ephemeral: true });
+
+    await koala.db.setMaintenanceMode(state);
+
+    interaction.reply({
+      content: "Maintenance mode " + (state === true ? "enabled" : "disabled"),
+      ephemeral: true,
+    });
+  }
 }

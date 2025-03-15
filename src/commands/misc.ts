@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { ERROR_MESSAGES } from "@/errors";
 import { EmbedBuilder, type CommandInteraction } from "discord.js";
 import { Discord, Slash } from "discordx";
 
@@ -22,7 +23,7 @@ export class MiscCommands {
   }
 
   @Slash({ description: "Feeling lost? Get to know the basics!" })
-  help(interaction: CommandInteraction, client: KoalaClient): void {
+  async help(interaction: CommandInteraction, client: KoalaClient) {
     const links = [`[Invite me](${getInviteLink(client.user!.id)})`];
 
     if (env.SUPPORT_SERVER_LINK) {
@@ -40,6 +41,12 @@ export class MiscCommands {
       .addFields({
         name: "Links",
         value: links.join(" • "),
+      });
+
+    if (await koala.db.getMaintenanceMode())
+      helpEmbed.addFields({
+        name: "*Alert!!*",
+        value: `*${ERROR_MESSAGES["maintenance"]}*`,
       });
 
     interaction.reply({

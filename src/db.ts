@@ -1,10 +1,17 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import IORedis from "ioredis";
+import { env } from "@/env";
+import { MaintenanceError } from "@/errors";
 
 export class Database {
   private prisma: PrismaClient;
+  private redis: IORedis;
 
   constructor() {
     this.prisma = new PrismaClient();
+    this.redis = new IORedis(env.REDIS_URL, {
+      maxRetriesPerRequest: null,
+    });
   }
 
   async deleteConfig(guildId: string) {
@@ -20,6 +27,8 @@ export class Database {
   }
 
   async voiceEnable(guildId: string) {
+    if (await this.getMaintenanceMode()) throw new MaintenanceError();
+
     const guildIdBigInt = BigInt(guildId);
 
     await this.prisma.config.upsert({
@@ -50,6 +59,8 @@ export class Database {
   }
 
   async voiceDisable(guildId: string) {
+    if (await this.getMaintenanceMode()) throw new MaintenanceError();
+
     if (!this.isVoiceEnabled(guildId)) {
       return;
     }
@@ -66,6 +77,8 @@ export class Database {
   }
 
   async isVoiceEnabled(guildId: string) {
+    if (await this.getMaintenanceMode()) return false;
+
     const guildIdBigInt = BigInt(guildId);
 
     const config = await this.prisma.voiceConfig.findUnique({
@@ -85,6 +98,8 @@ export class Database {
     guildId: string,
     mode: Prisma.VoiceConfigGetPayload<Prisma.VoiceConfigDefaultArgs>["announceMode"],
   ) {
+    if (await this.getMaintenanceMode()) throw new MaintenanceError();
+
     const guildIdBigInt = BigInt(guildId);
 
     await this.prisma.config.upsert({
@@ -121,6 +136,8 @@ export class Database {
   }
 
   async voiceAnnounceDisable(guildId: string) {
+    if (await this.getMaintenanceMode()) throw new MaintenanceError();
+
     const guildIdBigInt = BigInt(guildId);
 
     const config = await this.prisma.voiceConfig.findUnique({
@@ -152,6 +169,8 @@ export class Database {
   }
 
   async isVoiceAnnounceEnabled(guildId: string, channelId?: string) {
+    if (await this.getMaintenanceMode()) return false;
+
     const guildIdBigInt = BigInt(guildId);
 
     const config = await this.prisma.voiceConfig.findUnique({
@@ -200,6 +219,8 @@ export class Database {
   }
 
   async setVoiceAnnounceChannel(guildId: string, channelIds: string[]) {
+    if (await this.getMaintenanceMode()) throw new MaintenanceError();
+
     const guildIdBigInt = BigInt(guildId);
 
     await this.prisma.voiceChannel.deleteMany({
@@ -274,5 +295,19 @@ export class Database {
     if (!result) return;
 
     return result;
+  }
+
+  async setMaintenanceMode(state: boolean) {
+    if (state == false) return this.clearMaintenanceMode();
+    await this.redis.set("global:maintenance", state.toString());
+  }
+
+  async getMaintenanceMode() {
+    const res = await this.redis.get("global:maintenance");
+    return res === "true";
+  }
+
+  async clearMaintenanceMode() {
+    await this.redis.del("global:maintenance");
   }
 }

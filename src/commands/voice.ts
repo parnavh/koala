@@ -1,3 +1,4 @@
+import { ERROR_MESSAGES } from "@/errors";
 import {
   ApplicationCommandOptionType,
   type CommandInteraction,
@@ -52,9 +53,14 @@ export class VoiceCommands {
     }
 
     if (!(await koala.db.isVoiceEnabled(member.guild.id))) {
+      let content = "Voice module is disabled for this server :(";
+
+      if (await koala.db.getMaintenanceMode())
+        content = ERROR_MESSAGES["maintenance"];
+
       return void interaction.reply({
         ephemeral: true,
-        content: "Voice module is disabled for this server :(",
+        content,
       });
     }
 

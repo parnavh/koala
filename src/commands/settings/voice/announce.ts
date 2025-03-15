@@ -1,3 +1,4 @@
+import { ERROR_MESSAGES, MaintenanceError } from "@/errors";
 import { PermissionGuard } from "@discordx/utilities";
 import {
   ActionRowBuilder,
@@ -54,13 +55,22 @@ export class VoiceSettings {
       });
     }
 
-    await koala.db.voiceAnnounceEnable(interaction.guildId, mode);
+    await interaction.deferReply({
+      ephemeral: true,
+    });
 
     let content = "Announcement has been enabled!";
 
     if (mode !== "GLOBAL") {
       content +=
         "\nPlease ensure that you have configured the required channels too!";
+    }
+
+    try {
+      await koala.db.voiceAnnounceEnable(interaction.guildId, mode);
+    } catch (e) {
+      if (e instanceof MaintenanceError) content = e.message;
+      else content = "Something went wrong, please try again later!";
     }
 
     void interaction.reply({
@@ -84,9 +94,18 @@ export class VoiceSettings {
       });
     }
 
-    await koala.db.voiceAnnounceDisable(interaction.guildId);
+    await interaction.deferReply({
+      ephemeral: true,
+    });
 
     let content = "Announcement has been disabled";
+
+    try {
+      await koala.db.voiceAnnounceDisable(interaction.guildId);
+    } catch (e) {
+      if (e instanceof MaintenanceError) content = e.message;
+      else content = "Something went wrong, please try again later!";
+    }
 
     void interaction.reply({
       content,
@@ -106,14 +125,19 @@ export class VoiceSettings {
 
     const channels = interaction.values;
 
-    koala.db.setVoiceAnnounceChannel(interaction.guildId, channels);
-
-    const content =
+    let content =
       channels.length == 0
         ? "Removed all channels!"
         : `Configured ${channels.length} channel${
             channels.length == 1 ? "" : "s"
           }`;
+
+    try {
+      await koala.db.setVoiceAnnounceChannel(interaction.guildId, channels);
+    } catch (e) {
+      if (e instanceof MaintenanceError) content = e.message;
+      else content = "Something went wrong, please try again later!";
+    }
 
     interaction.followUp({
       content,
@@ -150,6 +174,13 @@ export class VoiceSettings {
         ephemeral: true,
         content:
           "Every channel is enabled for announcement, you do not need to configure this!",
+      });
+    }
+
+    if (await koala.db.getMaintenanceMode()) {
+      return interaction.reply({
+        ephemeral: true,
+        content: ERROR_MESSAGES["maintenance"],
       });
     }
 
