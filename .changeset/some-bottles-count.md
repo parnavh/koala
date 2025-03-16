@@ -1,0 +1,5 @@
+---
+"koala": patch
+---
+
+update dependencies
