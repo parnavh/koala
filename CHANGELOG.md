@@ -1,5 +1,11 @@
 # koala
 
+## 0.4.1
+
+### Patch Changes
+
+- 8f9a7bb: update dependencies
+
 ## 0.4.0
 
 ### Minor Changes
