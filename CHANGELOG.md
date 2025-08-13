@@ -1,5 +1,11 @@
 # koala
 
+## 0.4.2
+
+### Patch Changes
+
+- 0d53af4: fixed koala jumping around after changing voice channels
+
 ## 0.4.1
 
 ### Patch Changes
