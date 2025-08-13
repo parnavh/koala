@@ -12,7 +12,10 @@ import { writeFile } from "fs/promises";
 import { BaseGuildVoiceChannel, Guild } from "discord.js";
 
 const speechClient = new textToSpeech.TextToSpeechClient({
-  credentials: env.GCP_KEY,
+  credentials: {
+    client_email: env.GCP_CLIENT_EMAIL,
+    private_key: env.GCP_PRIVATE_KEY,
+  },
 });
 
 const BASE_PATH = "tmp/audio";

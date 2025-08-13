@@ -6,14 +6,8 @@ export const env = createEnv({
     BOT_TOKEN: z.string(),
     DATABASE_URL: z.string(),
     REDIS_URL: z.string(),
-    GCP_KEY: z.string().transform((str, ctx) => {
-      try {
-        return JSON.parse(str);
-      } catch (e) {
-        ctx.addIssue({ code: "custom", message: "Invalid JSON" });
-        return z.NEVER;
-      }
-    }),
+    GCP_CLIENT_EMAIL: z.string(),
+    GCP_PRIVATE_KEY: z.string(),
     CUSTOM_INVITE_LINK: z.string().url().optional(),
     PERMISSIONS_INTEGER: z.coerce.number(),
     SUPPORT_SERVER_LINK: z.string().url().optional(),
