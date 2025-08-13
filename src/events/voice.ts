@@ -7,6 +7,14 @@ function getVoiceMemberCount(state: VoiceState) {
   return state.channel!.members.filter((m) => !m.user.bot).size;
 }
 
+function disconnectVoice(guildId: string) {
+  const connection = getVoiceConnection(guildId);
+  if (connection) {
+    connection.disconnect();
+    connection.destroy();
+  }
+}
+
 @Discord()
 export class Voice {
   @On({ event: "voiceStateUpdate" })
@@ -53,13 +61,7 @@ export class Voice {
       if (
         oldState.channel?.members.find((m) => m.user.id === client.user!.id)
       ) {
-        const connection = getVoiceConnection(oldState.guild.id);
-        if (connection) {
-          connection.disconnect();
-          connection.destroy();
-        }
-
-        await koala.queue.destroyVoiceQueue(oldState.guild.id);
+        disconnectVoice(oldState.guild.id);
       }
       return;
     }
@@ -90,11 +92,7 @@ export class Voice {
       if (
         oldState.channel?.members.find((m) => m.user.id === client.user!.id)
       ) {
-        joinVoiceChannel({
-          channelId: newState.channelId,
-          guildId: newState.guild.id,
-          adapterCreator: newState.guild.voiceAdapterCreator,
-        });
+        disconnectVoice(oldState.guild.id);
       }
       return;
     }
