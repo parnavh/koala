@@ -1,7 +1,9 @@
 import {
   AudioPlayerStatus,
   createAudioResource,
+  getVoiceConnection,
   joinVoiceChannel,
+  VoiceConnectionStatus,
 } from "@discordjs/voice";
 import { createHash } from "crypto";
 import { createReadStream, existsSync, mkdirSync } from "fs";
@@ -95,24 +97,30 @@ export async function playText(rawText: string, options: VoiceData) {
     await createAudioFile(sanitizedText, hash);
   }
 
-  const audioResource = createAudioResource(
-    createReadStream(`${BASE_PATH}/${hash}.ogg`),
-  );
-
   if (isVoiceChannelEmpty(guild, options.channelId)) {
     return;
   }
 
-  const connection = joinVoiceChannel({
-    channelId: options.channelId,
-    guildId: options.guildId,
-    adapterCreator: guild.voiceAdapterCreator,
-  });
+  const audioResource = createAudioResource(
+    createReadStream(`${BASE_PATH}/${hash}.ogg`),
+  );
 
   const audioPlayer = koala.queue.getAudioPlayer(options.guildId);
 
-  audioPlayer.play(audioResource);
+  let connection = getVoiceConnection(options.guildId);
 
+  if (!connection || connection.joinConfig.channelId !== options.channelId) {
+    connection = joinVoiceChannel({
+      channelId: options.channelId,
+      guildId: options.guildId,
+      adapterCreator: guild.voiceAdapterCreator,
+    });
+    await new Promise<void>((res, _) => {
+      connection?.once(VoiceConnectionStatus.Ready, res);
+    });
+  }
+
+  audioPlayer.play(audioResource);
   connection.subscribe(audioPlayer);
 
   return new Promise<void>((resolve, reject) => {

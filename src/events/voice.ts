@@ -1,5 +1,5 @@
-import { type ArgsOf, Discord, On, Guard, GuardFunction } from "discordx";
-import { getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
+import { type ArgsOf, Discord, On, Guard } from "discordx";
+import { getVoiceConnection } from "@discordjs/voice";
 import { NotBot } from "@discordx/utilities";
 import type { VoiceState } from "discord.js";
 
