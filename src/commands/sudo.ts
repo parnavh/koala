@@ -34,7 +34,7 @@ const OwnerOnly: IsGuardUserCallback = async ({ client, user }) => {
 export class SuperUserCommands {
   @Slash({ description: "Status" })
   async status(interaction: CommandInteraction, client: KoalaClient) {
-    interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ ephemeral: true });
     const serverCount = client.guilds.cache.size;
 
     const guilds: Promise<number>[] = [];
@@ -53,9 +53,8 @@ export class SuperUserCommands {
 
     const memberCount = res.reduce((prevVal, currVal) => prevVal + currVal);
 
-    interaction.followUp({
+    interaction.editReply({
       content: `In \`${serverCount}\` servers\n\`${memberCount}\` Users!`,
-      ephemeral: true,
     });
   }
 
@@ -71,10 +70,8 @@ export class SuperUserCommands {
     })
     state: boolean,
     interaction: CommandInteraction,
-    client: KoalaClient,
+    _: KoalaClient,
   ) {
-    interaction.deferReply({ ephemeral: true });
-
     await koala.db.setMaintenanceMode(state);
 
     interaction.reply({

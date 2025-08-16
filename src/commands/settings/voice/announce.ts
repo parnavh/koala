@@ -73,9 +73,8 @@ export class VoiceSettings {
       else content = "Something went wrong, please try again later!";
     }
 
-    void interaction.reply({
+    void interaction.editReply({
       content,
-      ephemeral: true,
     });
   }
 
@@ -107,9 +106,8 @@ export class VoiceSettings {
       else content = "Something went wrong, please try again later!";
     }
 
-    void interaction.reply({
+    void interaction.editReply({
       content,
-      ephemeral: true,
     });
   }
 
@@ -139,9 +137,8 @@ export class VoiceSettings {
       else content = "Something went wrong, please try again later!";
     }
 
-    interaction.followUp({
+    interaction.editReply({
       content,
-      ephemeral: true,
     });
   }
 
