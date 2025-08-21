@@ -37,21 +37,10 @@ export class SuperUserCommands {
     await interaction.deferReply({ ephemeral: true });
     const serverCount = client.guilds.cache.size;
 
-    const guilds: Promise<number>[] = [];
-
-    client.guilds.cache.forEach((guild) => {
-      guilds.push(
-        new Promise(async (resolve, _reject) => {
-          var members = await guild.members.fetch();
-          members = members.filter((m) => !m.user.bot);
-          resolve(members.size);
-        }),
-      );
-    });
-
-    const res = await Promise.all(guilds);
-
-    const memberCount = res.reduce((prevVal, currVal) => prevVal + currVal);
+    const memberCount = client.guilds.cache.reduce(
+      (total, curr) => (total += curr.memberCount),
+      0,
+    );
 
     interaction.editReply({
       content: `In \`${serverCount}\` servers\n\`${memberCount}\` Users!`,

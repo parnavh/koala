@@ -15,19 +15,11 @@ export const bot = new Client({
   // Discord intents
   intents: [
     IntentsBitField.Flags.Guilds,
-    IntentsBitField.Flags.GuildMembers,
-    IntentsBitField.Flags.GuildMessages,
     IntentsBitField.Flags.GuildVoiceStates,
-    IntentsBitField.Flags.MessageContent,
   ],
 
   // Debug logs are disabled in silent mode
   silent: process.env.NODE_ENV === "production" ? true : false,
-
-  // Configuration for @SimpleCommand
-  simpleCommand: {
-    prefix: "`",
-  },
 });
 
 bot.once("ready", async () => {
