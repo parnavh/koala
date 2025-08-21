@@ -1,5 +1,13 @@
 # koala
 
+## 0.4.4
+
+### Patch Changes
+
+- b0cc4b3: removed unnecessary intents
+
+  previously included intents for future use
+
 ## 0.4.3
 
 ### Patch Changes
