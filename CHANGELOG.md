@@ -1,5 +1,11 @@
 # koala
 
+## 0.4.6
+
+### Patch Changes
+
+- ec7ce1b: fixed koala sometimes unable to find the channel
+
 ## 0.4.5
 
 ### Patch Changes
