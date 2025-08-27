@@ -11,7 +11,7 @@ import textToSpeech from "@google-cloud/text-to-speech";
 import { env } from "@/env";
 import { VoiceData } from "@/queue";
 import { writeFile } from "fs/promises";
-import { BaseGuildVoiceChannel, Guild } from "discord.js";
+import { Guild, ThreadMemberManager } from "discord.js";
 
 const speechClient = new textToSpeech.TextToSpeechClient({
   credentials: {
@@ -45,10 +45,8 @@ async function createAudioFile(text: string, hash: string) {
 
 const sanitizeText = (text: string) => text.replace(/[^\w\d]+/g, " ");
 
-function isVoiceChannelEmpty(guild: Guild, channelId: string) {
-  const channel = guild.channels.cache.find((channel) => {
-    return channel.id == channelId;
-  }) as BaseGuildVoiceChannel;
+async function isVoiceChannelEmpty(guild: Guild, channelId: string) {
+  const channel = await guild.channels.fetch(channelId);
 
   if (!channel) {
     console.warn(
@@ -56,6 +54,11 @@ function isVoiceChannelEmpty(guild: Guild, channelId: string) {
     );
     return true;
   }
+
+  if (channel.members instanceof ThreadMemberManager)
+    throw new Error(
+      "this should not be possible -> channel should not be a thread",
+    );
 
   if (channel.members.filter((m) => !m.user.bot).size == 0) {
     return true;
@@ -78,7 +81,7 @@ export async function playText(rawText: string, options: VoiceData) {
     return;
   }
 
-  if (isVoiceChannelEmpty(guild, options.channelId)) {
+  if (await isVoiceChannelEmpty(guild, options.channelId)) {
     return;
   }
 
@@ -95,7 +98,7 @@ export async function playText(rawText: string, options: VoiceData) {
     await createAudioFile(sanitizedText, hash);
   }
 
-  if (isVoiceChannelEmpty(guild, options.channelId)) {
+  if (await isVoiceChannelEmpty(guild, options.channelId)) {
     return;
   }
 
