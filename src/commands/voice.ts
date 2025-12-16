@@ -64,9 +64,15 @@ export class VoiceCommands {
       });
     }
 
+    let reply_content = `Speaking: ${text}`;
+
+    if (text.length > 1900) {
+      reply_content = `Speaking: ${text.substring(0, 20)}...`;
+    }
+
     interaction.reply({
       ephemeral: true,
-      content: `Speaking: ${text}`,
+      content: reply_content,
       allowedMentions: {},
     });
 
