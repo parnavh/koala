@@ -1,5 +1,11 @@
 # koala
 
+## 0.4.7
+
+### Patch Changes
+
+- f208882: fixed bot crash when tts text too long
+
 ## 0.4.6
 
 ### Patch Changes
