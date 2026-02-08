@@ -1,5 +1,0 @@
----
-"koala": patch
----
-
-fixed presence
