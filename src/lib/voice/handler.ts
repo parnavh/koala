@@ -46,19 +46,27 @@ async function createAudioFile(text: string, hash: string) {
 const sanitizeText = (text: string) => text.replace(/[^\w\d]+/g, " ");
 
 async function isVoiceChannelEmpty(guild: Guild, channelId: string) {
-  const channel = await guild.channels.fetch(channelId);
+  let channel;
+
+  try {
+    channel = await guild.channels.fetch(channelId);
+  } catch (error) {
+    console.error(error);
+  }
 
   if (!channel) {
-    console.warn(
+    console.error(
       `ghost guild voice channel [guild: ${guild.id}  channelId: ${channelId}]`,
     );
     return true;
   }
 
-  if (channel.members instanceof ThreadMemberManager)
-    throw new Error(
-      "this should not be possible -> channel should not be a thread",
+  if (channel.members instanceof ThreadMemberManager) {
+    console.error(
+      `this should not be possible -> channel should not be a thread [guild: ${guild.id}  channelId: ${channelId}]`,
     );
+    return true;
+  }
 
   if (channel.members.filter((m) => !m.user.bot).size == 0) {
     return true;
