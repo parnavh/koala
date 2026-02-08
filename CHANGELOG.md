@@ -1,5 +1,12 @@
 # koala
 
+## 0.4.8
+
+### Patch Changes
+
+- 9e9ee30: fixed presence
+- 8f6e286: fixed crash when no voice channel found
+
 ## 0.4.7
 
 ### Patch Changes
