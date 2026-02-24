@@ -1,5 +1,11 @@
 # koala
 
+## 0.4.9
+
+### Patch Changes
+
+- 13b498c: updated discordjs voice
+
 ## 0.4.8
 
 ### Patch Changes
