@@ -1,6 +1,6 @@
 import { dirname, importx } from "@discordx/importer";
 import type { Interaction, Message } from "discord.js";
-import { IntentsBitField } from "discord.js";
+import { ActivityType, IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import { Queue } from "@/queue";
 import { Database } from "@/db";
@@ -22,7 +22,9 @@ export const bot = new Client({
   silent: process.env.NODE_ENV === "production" ? true : false,
 
   presence: {
-    activities: [{ name: "Watching you waste time" }],
+    activities: [
+      { name: "Watching you waste time", type: ActivityType.Watching },
+    ],
   },
 });
 
@@ -72,5 +74,8 @@ async function run() {
   // Log in with your bot token
   await bot.login(process.env.BOT_TOKEN);
 }
+
+process.on("unhandledRejection", console.error);
+process.on("uncaughtException", console.error);
 
 run();

@@ -3,6 +3,9 @@
 .env.local
 .envrc
 
+# direnv
+.direnv
+
 # folders
 build
 node_modules
