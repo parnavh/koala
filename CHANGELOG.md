@@ -1,5 +1,15 @@
 # koala
 
+## 0.5.0
+
+### Minor Changes
+
+- 7ffc3f3: added global metric tracking
+
+### Patch Changes
+
+- 80dc74c: added global error handling
+
 ## 0.4.9
 
 ### Patch Changes
