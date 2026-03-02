@@ -4,6 +4,7 @@ import { ActivityType, IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import { Queue } from "@/queue";
 import { Database } from "@/db";
+import "@/cron";
 
 export const bot = new Client({
   // To use only guild command

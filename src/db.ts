@@ -260,7 +260,7 @@ export class Database {
       .catch(() => {});
   }
 
-  async metricsUpdate(
+  async GuildMetricsUpdate(
     guildId: string,
     voiceCharacters: number,
     memberCount: number = 0,
@@ -309,5 +309,14 @@ export class Database {
 
   async clearMaintenanceMode() {
     await this.redis.del("global:maintenance");
+  }
+
+  async putGlobalMetrics(totalGuilds: number, totalUsers: number) {
+    await this.prisma.globalMetrics.create({
+      data: {
+        totalGuilds,
+        totalUsers,
+      },
+    });
   }
 }

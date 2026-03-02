@@ -41,3 +41,10 @@ model GuildMetrics {
   voiceCharacters Int
   memberCount     Int    @default(0)
 }
+
+model GlobalMetrics {
+  id          String @id @default(cuid())
+  date        DateTime? @unique @default(now())
+  totalGuilds Int
+  totalUsers  Int
+}

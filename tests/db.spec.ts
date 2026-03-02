@@ -79,13 +79,13 @@ describe("guild metrics", () => {
   });
 
   it("voice character usage", async () => {
-    await db.metricsUpdate(guildId, 200);
+    await db.GuildMetricsUpdate(guildId, 200);
     const result = await db.getMetrics(guildId);
     expect(result?.voiceCharacters).toBe(200);
   });
 
   it("server member count", async () => {
-    await db.metricsUpdate(guildId, 30, 20);
+    await db.GuildMetricsUpdate(guildId, 30, 20);
     const result = await db.getMetrics(guildId);
     expect(result?.memberCount).toBe(20);
   });
