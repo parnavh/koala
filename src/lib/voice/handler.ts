@@ -98,7 +98,7 @@ export async function playText(rawText: string, options: VoiceData) {
   }
 
   if (!existsSync(`${BASE_PATH}/${hash}.ogg`)) {
-    koala.db.metricsUpdate(
+    koala.db.guildMetricsUpdate(
       options.guildId,
       sanitizedText.length,
       guild.memberCount,

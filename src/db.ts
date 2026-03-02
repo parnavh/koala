@@ -260,7 +260,7 @@ export class Database {
       .catch(() => {});
   }
 
-  async GuildMetricsUpdate(
+  async guildMetricsUpdate(
     guildId: string,
     voiceCharacters: number,
     memberCount: number = 0,
