@@ -1,5 +1,11 @@
 # koala
 
+## 0.5.1
+
+### Patch Changes
+
+- 909647a: fixed broken guild metrics function rename
+
 ## 0.5.0
 
 ### Minor Changes
