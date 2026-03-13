@@ -1,14 +1,20 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "../generated/prisma/client";
 import IORedis from "ioredis";
 import { env } from "@/env";
 import { MaintenanceError } from "@/errors";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 export class Database {
   private prisma: PrismaClient;
   private redis: IORedis;
 
   constructor() {
-    this.prisma = new PrismaClient();
+    const adapter = new PrismaPg({
+      connectionString: env.DATABASE_URL,
+    });
+    this.prisma = new PrismaClient({
+      adapter,
+    });
     this.redis = new IORedis(env.REDIS_URL, {
       maxRetriesPerRequest: null,
     });

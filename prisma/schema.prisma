@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Config {
@@ -43,7 +43,7 @@ model GuildMetrics {
 }
 
 model GlobalMetrics {
-  id          String @id @default(cuid())
+  id          String    @id @default(cuid())
   date        DateTime? @unique @default(now())
   totalGuilds Int
   totalUsers  Int
