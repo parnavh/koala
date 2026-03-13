@@ -129,12 +129,16 @@ describe("global flags", () => {
     expect(res2).toBeTruthy();
 
     await db.setMaintenanceMode(true);
-    expect(db.voiceEnable(guildId)).rejects.toThrowError(MaintenanceError);
-    expect(db.voiceDisable(guildId)).rejects.toThrowError(MaintenanceError);
-    expect(db.voiceAnnounceEnable(guildId, "GLOBAL")).rejects.toThrowError(
+    await expect(db.voiceEnable(guildId)).rejects.toThrowError(
       MaintenanceError,
     );
-    expect(db.voiceAnnounceDisable(guildId)).rejects.toThrowError(
+    await expect(db.voiceDisable(guildId)).rejects.toThrowError(
+      MaintenanceError,
+    );
+    await expect(
+      db.voiceAnnounceEnable(guildId, "GLOBAL"),
+    ).rejects.toThrowError(MaintenanceError);
+    await expect(db.voiceAnnounceDisable(guildId)).rejects.toThrowError(
       MaintenanceError,
     );
   });
