@@ -34,13 +34,17 @@
             ffmpeg
             gnumake
             nodePackages.prisma
-            nodejs_22
+            nodejs_20
             openssl
-            pnpm_10
+            pnpm_9
             python3
           ];
           shellHook = with pkgs; ''
-            export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines}/bin/schema-engine"
+            export PRISMA_SCHEMA_ENGINE_BINARY="${prisma-engines}/bin/schema-engine"
+            export PRISMA_QUERY_ENGINE_BINARY="${prisma-engines}/bin/query-engine"
+            export PRISMA_QUERY_ENGINE_LIBRARY="${prisma-engines}/lib/libquery_engine.node"
+            export PRISMA_INTROSPECTION_ENGINE_BINARY="${prisma-engines}/bin/introspection-engine"
+            export PRISMA_FMT_BINARY="${prisma-engines}/bin/prisma-fmt"
           '';
         };
       }
