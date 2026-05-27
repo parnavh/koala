@@ -4,7 +4,7 @@ import { NotBot } from "@discordx/utilities";
 import type { VoiceState } from "discord.js";
 
 function getVoiceMemberCount(state: VoiceState) {
-  return state.channel!.members.filter((m) => !m.user.bot).size;
+  return state.channel?.members.filter((m) => !m.user.bot).size ?? 0;
 }
 
 function disconnectVoice(guildId: string) {
@@ -23,18 +23,18 @@ export class Voice {
     [oldState, newState]: ArgsOf<"voiceStateUpdate">,
     _: KoalaClient,
   ) {
-    if (oldState.channel || !newState.channelId) return;
+    if (oldState.channel || !newState.channel) return;
 
     const enabled = await koala.db.isVoiceAnnounceEnabled(
       newState.guild.id,
-      newState.channelId,
+      newState.channel.id,
     );
 
     if (!enabled) return;
 
     let message = `${newState.member?.displayName} joined`;
     let delay = 0;
-    let channelId = newState.channelId;
+    let channelId = newState.channel.id;
 
     if (getVoiceMemberCount(newState) == 1) {
       message = `Welcome ${newState.member?.displayName}!`;
@@ -55,12 +55,10 @@ export class Voice {
     [oldState, newState]: ArgsOf<"voiceStateUpdate">,
     client: KoalaClient,
   ) {
-    if (!oldState.channelId || newState.channel) return;
+    if (!oldState.channel || newState.channel) return;
 
     if (getVoiceMemberCount(oldState) === 0) {
-      if (
-        oldState.channel?.members.find((m) => m.user.id === client.user!.id)
-      ) {
+      if (oldState.channel.members.find((m) => m.user.id === client.user!.id)) {
         disconnectVoice(oldState.guild.id);
       }
       return;
@@ -68,13 +66,13 @@ export class Voice {
 
     const enabled = await koala.db.isVoiceAnnounceEnabled(
       oldState.guild.id,
-      oldState.channelId,
+      oldState.channel.id,
     );
 
     if (!enabled) return;
 
     koala.queue.addToVoiceQueue(`${oldState.member?.displayName} left`, {
-      channelId: oldState.channelId,
+      channelId: oldState.channel.id,
       guildId: oldState.guild.id,
     });
   }
@@ -85,13 +83,11 @@ export class Voice {
     [oldState, newState]: ArgsOf<"voiceStateUpdate">,
     client: KoalaClient,
   ) {
-    if (!oldState.channelId || !newState.channelId) return;
-    if (oldState.channelId === newState.channelId) return;
+    if (!oldState.channel || !newState.channel) return;
+    if (oldState.channel.id === newState.channel.id) return;
 
     if (getVoiceMemberCount(oldState) === 0) {
-      if (
-        oldState.channel?.members.find((m) => m.user.id === client.user!.id)
-      ) {
+      if (oldState.channel.members.find((m) => m.user.id === client.user!.id)) {
         disconnectVoice(oldState.guild.id);
       }
       return;
@@ -103,7 +99,7 @@ export class Voice {
     [oldState, newState]: ArgsOf<"voiceStateUpdate">,
     client: KoalaClient,
   ) {
-    if (!oldState.channelId || newState.channel) return;
+    if (!oldState.channel || newState.channel) return;
     if (!oldState.member || !client.user) return;
     if (oldState.member.id !== client.user.id) return;
 
