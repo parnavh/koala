@@ -5,6 +5,13 @@ import { Client } from "discordx";
 import { Queue } from "@/queue";
 import { Database } from "@/db";
 import "@/cron";
+import { BotMaintenancePresence } from "./commands/sudo";
+
+export const BotPresence = {
+  activities: [
+    { name: "Watching you waste time", type: ActivityType.Watching },
+  ],
+} as const;
 
 export const bot = new Client({
   // To use only guild command
@@ -22,11 +29,7 @@ export const bot = new Client({
   // Debug logs are disabled in silent mode
   silent: process.env.NODE_ENV === "production" ? true : false,
 
-  presence: {
-    activities: [
-      { name: "Watching you waste time", type: ActivityType.Watching },
-    ],
-  },
+  presence: BotPresence,
 });
 
 bot.once("ready", async () => {
@@ -41,6 +44,10 @@ bot.once("ready", async () => {
   // It must only be executed once
   //
   // await bot.clearApplicationCommands(...bot.guilds.cache.map((g) => g.id));
+
+  if (await koala.db.getMaintenanceMode()) {
+    bot.user?.setPresence(BotMaintenancePresence);
+  }
 
   console.log("Bot started");
 });
