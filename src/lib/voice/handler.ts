@@ -12,6 +12,7 @@ import { env } from "@/env";
 import { VoiceData } from "@/queue";
 import { writeFile } from "fs/promises";
 import { Guild, ThreadMemberManager } from "discord.js";
+import { AUDIO_BASE_PATH } from "@/constants";
 
 const speechClient = new textToSpeech.TextToSpeechClient({
   credentials: {
@@ -19,8 +20,6 @@ const speechClient = new textToSpeech.TextToSpeechClient({
     private_key: env.GCP_PRIVATE_KEY,
   },
 });
-
-const BASE_PATH = "tmp/audio";
 
 async function createAudioFile(text: string, hash: string) {
   const [response] = await speechClient.synthesizeSpeech({
@@ -40,7 +39,7 @@ async function createAudioFile(text: string, hash: string) {
     throw new Error("Audio file generation failed\nText: " + text);
   }
 
-  await writeFile(`${BASE_PATH}/${hash}.ogg`, response.audioContent);
+  await writeFile(`${AUDIO_BASE_PATH}/${hash}.ogg`, response.audioContent);
 }
 
 const sanitizeText = (text: string) => text.replace(/[^\w\d]+/g, " ");
@@ -93,11 +92,11 @@ export async function playText(rawText: string, options: VoiceData) {
     return;
   }
 
-  if (!existsSync(BASE_PATH)) {
-    mkdirSync(BASE_PATH, { recursive: true });
+  if (!existsSync(AUDIO_BASE_PATH)) {
+    mkdirSync(AUDIO_BASE_PATH, { recursive: true });
   }
 
-  if (!existsSync(`${BASE_PATH}/${hash}.ogg`)) {
+  if (!existsSync(`${AUDIO_BASE_PATH}/${hash}.ogg`)) {
     koala.db.guildMetricsUpdate(
       options.guildId,
       sanitizedText.length,
@@ -111,7 +110,7 @@ export async function playText(rawText: string, options: VoiceData) {
   }
 
   const audioResource = createAudioResource(
-    createReadStream(`${BASE_PATH}/${hash}.ogg`),
+    createReadStream(`${AUDIO_BASE_PATH}/${hash}.ogg`),
   );
 
   const audioPlayer = koala.queue.getAudioPlayer(options.guildId);

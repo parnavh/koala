@@ -1,3 +1,4 @@
+import { ANNOUNCEMENT_VOICE_CHANNELS_PAGE_SIZE } from "@/constants";
 import { ERROR_MESSAGES, MaintenanceError } from "@/errors";
 import { PermissionGuard } from "@discordx/utilities";
 import {
@@ -28,8 +29,6 @@ import {
 type VoiceConfig = NonNullable<
   Awaited<ReturnType<typeof koala.db.getVoiceConfig>>
 >;
-
-const ANNOUNCEMENT_VOICE_CHANNELS_PAGE_SIZE = 25;
 
 @Discord()
 @SlashGroup({

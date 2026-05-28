@@ -1,3 +1,4 @@
+import { HELP_DESCRIPTION } from "@/constants";
 import { env } from "@/env";
 import { ERROR_MESSAGES } from "@/errors";
 import { EmbedBuilder, type CommandInteraction } from "discord.js";
@@ -33,11 +34,7 @@ export class MiscCommands {
     const helpEmbed = new EmbedBuilder()
       .setColor(0xb46547)
       .setTitle("Help")
-      .setDescription(
-        `Koala is a voice utility-focused bot that enhances your discord experience by announcing users as they join the channel and much more
-        \nUse the \`/settings announce\` command and its subcommands to customize which channels Koala announces in
-        \nBy default, announcements are enabled for every channel, so you're ready to go right out of the box!\n`,
-      )
+      .setDescription(HELP_DESCRIPTION)
       .addFields({
         name: "Links",
         value: links.join(" • "),

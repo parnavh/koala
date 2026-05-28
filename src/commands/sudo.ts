@@ -1,5 +1,5 @@
+import { BotPresence, BotPresenceMaintenance } from "@/constants";
 import { env } from "@/env";
-import { BotPresence } from "@/main";
 import { IsGuardUserCallback, IsGuildUser } from "@discordx/utilities";
 import {
   type CommandInteraction,
@@ -15,10 +15,6 @@ import {
   SlashChoice,
   SlashOption,
 } from "discordx";
-
-export const BotMaintenancePresence = {
-  activities: [{ name: "Maintenance Underway 🚧", type: ActivityType.Custom }],
-} as const;
 
 const OwnerOnly: IsGuardUserCallback = async ({ client, user }) => {
   if (!user) {
@@ -70,7 +66,7 @@ export class SuperUserCommands {
     await koala.db.setMaintenanceMode(state);
 
     if (state === true) {
-      koala.client.user?.setPresence(BotMaintenancePresence);
+      koala.client.user?.setPresence(BotPresenceMaintenance);
     } else {
       koala.client.user?.setPresence(BotPresence);
     }

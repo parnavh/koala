@@ -1,17 +1,12 @@
 import { dirname, importx } from "@discordx/importer";
 import type { Interaction, Message } from "discord.js";
-import { ActivityType, IntentsBitField } from "discord.js";
+import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import { Queue } from "@/queue";
 import { Database } from "@/db";
 import "@/cron";
-import { BotMaintenancePresence } from "./commands/sudo";
-
-export const BotPresence = {
-  activities: [
-    { name: "Watching you waste time", type: ActivityType.Watching },
-  ],
-} as const;
+import { BotPresence, BotPresenceMaintenance } from "@/constants";
+import { env } from "@/env";
 
 export const bot = new Client({
   // To use only guild command
@@ -46,7 +41,7 @@ bot.once("ready", async () => {
   // await bot.clearApplicationCommands(...bot.guilds.cache.map((g) => g.id));
 
   if (await koala.db.getMaintenanceMode()) {
-    bot.user?.setPresence(BotMaintenancePresence);
+    bot.user?.setPresence(BotPresenceMaintenance);
   }
 
   console.log("Bot started");
@@ -74,13 +69,8 @@ async function run() {
   // The following syntax should be used in the ECMAScript environment
   await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);
 
-  // Let's start the bot
-  if (!process.env.BOT_TOKEN) {
-    throw Error("Could not find BOT_TOKEN in your environment");
-  }
-
   // Log in with your bot token
-  await bot.login(process.env.BOT_TOKEN);
+  await bot.login(env.BOT_TOKEN);
 }
 
 process.on("unhandledRejection", console.error);
