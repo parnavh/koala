@@ -3,22 +3,33 @@ import { PermissionGuard } from "@discordx/utilities";
 import {
   ActionRowBuilder,
   ApplicationCommandOptionType,
-  ChannelSelectMenuBuilder,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
   ChannelSelectMenuInteraction,
   ChannelType,
   MessageActionRowComponentBuilder,
-  SelectMenuDefaultValueType,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
+  VoiceChannel,
   type CommandInteraction,
 } from "discord.js";
 import {
   Discord,
   Guard,
+  ButtonComponent,
   SelectMenuComponent,
   Slash,
   SlashChoice,
   SlashGroup,
   SlashOption,
 } from "discordx";
+
+type VoiceConfig = NonNullable<
+  Awaited<ReturnType<typeof koala.db.getVoiceConfig>>
+>;
+
+const ANNOUNCEMENT_VOICE_CHANNELS_PAGE_SIZE = 25;
 
 @Discord()
 @SlashGroup({
@@ -111,27 +122,53 @@ export class VoiceSettings {
     });
   }
 
-  @SelectMenuComponent({ id: "announcement-voice-channel" })
+  @SelectMenuComponent({ id: /^announcement-voice-channel:\d+$/ })
   async voiceChannels(interaction: ChannelSelectMenuInteraction) {
     await interaction.deferReply({
       ephemeral: true,
     });
 
-    if (!interaction.guildId) {
+    if (!interaction.guild) {
       return;
     }
 
-    const channels = interaction.values;
+    const page = parseInt(interaction.customId.split(":")[1]);
+
+    const allVoiceChannels = Array.from(
+      interaction.guild.channels.cache
+        .filter((c) => c.type == ChannelType.GuildVoice)
+        .values(),
+    );
+
+    const start = page * ANNOUNCEMENT_VOICE_CHANNELS_PAGE_SIZE;
+    const pageChannelIds = new Set(
+      allVoiceChannels
+        .slice(start, start + ANNOUNCEMENT_VOICE_CHANNELS_PAGE_SIZE)
+        .map((c) => c.id),
+    );
+
+    const config = await koala.db.getVoiceConfig(interaction.guild.id);
+
+    if (!config) {
+      return console.warn(
+        `Voice channel change initiated for a guild with no voice config, guilId: ${interaction.guild.id}`,
+      );
+    }
+
+    const existingIds = config.channels.map((c) => c.id.toString()) ?? [];
+
+    const merged = [
+      ...existingIds.filter((id) => !pageChannelIds.has(id)),
+      ...interaction.values,
+    ];
 
     let content =
-      channels.length == 0
+      merged.length == 0
         ? "Removed all channels!"
-        : `Configured ${channels.length} channel${
-            channels.length == 1 ? "" : "s"
-          }`;
+        : `Configured ${merged.length} channel${merged.length == 1 ? "" : "s"}`;
 
     try {
-      await koala.db.setVoiceAnnounceChannel(interaction.guildId, channels);
+      await koala.db.setVoiceAnnounceChannel(interaction.guild.id, merged);
     } catch (e) {
       if (e instanceof MaintenanceError) content = e.message;
       else content = "Something went wrong, please try again later!";
@@ -140,6 +177,92 @@ export class VoiceSettings {
     interaction.editReply({
       content,
     });
+  }
+
+  @ButtonComponent({ id: /^announcement-voice-channel-page:\d+$/ })
+  async voiceChannelPageChange(interaction: ButtonInteraction) {
+    if (!interaction.guild) return;
+
+    const page = parseInt(interaction.customId.split(":")[1]);
+    const config = await koala.db.getVoiceConfig(interaction.guild.id);
+
+    if (!config) {
+      return console.warn(
+        `Voice channel change initiated for a guild with no voice config, guilId: ${interaction.guild.id}`,
+      );
+    }
+
+    const voiceChannels = Array.from(
+      interaction.guild.channels.cache
+        .filter((channel) => channel.type == ChannelType.GuildVoice)
+        .values(),
+    );
+
+    await interaction.update(this.buildMenu(config, voiceChannels, page));
+  }
+
+  buildMenu(config: VoiceConfig, voiceChannels: VoiceChannel[], page: number) {
+    const start = page * ANNOUNCEMENT_VOICE_CHANNELS_PAGE_SIZE;
+    const pageChannels = voiceChannels.slice(
+      start,
+      start + ANNOUNCEMENT_VOICE_CHANNELS_PAGE_SIZE,
+    );
+    const totalPages = Math.ceil(
+      voiceChannels.length / ANNOUNCEMENT_VOICE_CHANNELS_PAGE_SIZE,
+    );
+
+    const configuredIds = new Set(config.channels.map((c) => c.id.toString()));
+
+    const menu = new StringSelectMenuBuilder()
+      .setCustomId(`announcement-voice-channel:${page}`)
+      .setMinValues(0)
+      .setMaxValues(pageChannels.length)
+      .setOptions(
+        pageChannels.map((channel) =>
+          new StringSelectMenuOptionBuilder()
+            .setLabel(channel.name)
+            .setValue(channel.id)
+            .setDefault(configuredIds.has(channel.id)),
+        ),
+      );
+
+    const menuRow =
+      new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
+        menu,
+      );
+
+    const prevButton = new ButtonBuilder()
+      .setCustomId(`announcement-voice-channel-page:${page - 1}`)
+      .setLabel("Previous")
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(page === 0);
+
+    const nextButton = new ButtonBuilder()
+      .setCustomId(`announcement-voice-channel-page:${page + 1}`)
+      .setLabel("Next")
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(page === totalPages - 1);
+
+    const pageIndicator = new ButtonBuilder()
+      .setCustomId("announcement-voice-channel-page-indicator")
+      .setLabel(`Page ${page + 1} / ${totalPages}`)
+      .setStyle(ButtonStyle.Primary)
+      .setDisabled(true);
+
+    const buttonRow =
+      new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
+        prevButton,
+        pageIndicator,
+        nextButton,
+      );
+
+    return {
+      ephemeral: true,
+      components: totalPages > 1 ? [menuRow, buttonRow] : [menuRow],
+      content: `Pick the channels you want to ${
+        config?.announceMode == "ENABLE" ? "enable" : "disable"
+      }`,
+    };
   }
 
   @Slash({ description: "Enable announcement in voice channels" })
@@ -181,30 +304,12 @@ export class VoiceSettings {
       });
     }
 
-    const menu = new ChannelSelectMenuBuilder({
-      customId: "announcement-voice-channel",
-      channelTypes: [ChannelType.GuildVoice],
-      minValues: 0,
-      maxValues: interaction.guild.channels.cache.filter(
-        (channel) => channel.type == ChannelType.GuildVoice,
-      ).size,
-      default_values: config.channels.map((channel) => ({
-        id: channel.id.toString(),
-        type: SelectMenuDefaultValueType.Channel,
-      })),
-    });
+    const voiceChannels = Array.from(
+      interaction.guild.channels.cache
+        .filter((channel) => channel.type == ChannelType.GuildVoice)
+        .values(),
+    );
 
-    const row =
-      new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
-        menu,
-      );
-
-    interaction.reply({
-      ephemeral: true,
-      components: [row],
-      content: `Pick the channels you want to ${
-        config?.announceMode == "ENABLE" ? "enable" : "disable"
-      }`,
-    });
+    interaction.reply(this.buildMenu(config, voiceChannels, 0));
   }
 }
