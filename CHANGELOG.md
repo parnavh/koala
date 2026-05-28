@@ -1,5 +1,13 @@
 # koala
 
+## 0.5.2
+
+### Patch Changes
+
+- bd290c9: fixed channel configuration for large servers
+- 432b927: better handled DAVE errors
+- 7dc4320: fixed invalid access of members of a channel
+
 ## 0.5.1
 
 ### Patch Changes
