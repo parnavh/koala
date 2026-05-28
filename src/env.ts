@@ -15,6 +15,7 @@ export const env = createEnv({
       if (typeof s === "string") return s.split(",");
       return [];
     }, z.array(z.string())),
+    TOPGG_TOKEN: z.string().optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
