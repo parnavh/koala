@@ -40,6 +40,8 @@ export class Queue {
 
     const worker = new Worker<VoiceData>(`voice-${guildId}`, this.voiceWorker, {
       connection: this.connection,
+      stalledInterval: 30_000,
+      maxStalledCount: 1,
     });
     worker.on("failed", console.error);
 

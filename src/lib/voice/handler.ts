@@ -137,18 +137,29 @@ export async function playText(rawText: string, options: VoiceData) {
   connection.subscribe(audioPlayer);
 
   return new Promise<void>((resolve, reject) => {
-    const errorAction = () => {
+    const timeout = setTimeout(() => {
       audioPlayer.removeListener(AudioPlayerStatus.Idle, idleAction);
-      reject();
+      audioPlayer.removeListener("error", errorAction);
+      reject(new Error("TTS playback timeout"));
+    }, 30_000);
+
+    const cleanup = () => {
+      clearTimeout(timeout);
+      audioPlayer.removeListener(AudioPlayerStatus.Idle, idleAction);
+      audioPlayer.removeListener("error", errorAction);
+    };
+
+    const errorAction = (err: any) => {
+      cleanup();
+      reject(err);
     };
 
     const idleAction = () => {
-      audioPlayer.removeListener("error", errorAction);
+      cleanup();
       resolve();
     };
 
     audioPlayer.once("error", errorAction);
-
     audioPlayer.once(AudioPlayerStatus.Idle, idleAction);
   });
 }
