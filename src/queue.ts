@@ -3,6 +3,7 @@ import IORedis from "ioredis";
 import { env } from "@/env";
 import { playText } from "@/lib/voice/handler";
 import { AudioPlayer, createAudioPlayer } from "@discordjs/voice";
+import { MAX_TTS_TIME_MS } from "@/constants";
 
 type Voice = {
   queue: Bull<VoiceData>;
@@ -38,11 +39,15 @@ export class Queue {
       connection: this.connection,
     });
 
-    const worker = new Worker<VoiceData>(`voice-${guildId}`, this.voiceWorker, {
-      connection: this.connection,
-      stalledInterval: 30_000,
-      maxStalledCount: 1,
-    });
+    const worker = new Worker<VoiceData>(
+      `voice-${guildId}`,
+      (job) => this.voiceWorker(job),
+      {
+        connection: this.connection,
+        stalledInterval: MAX_TTS_TIME_MS,
+        maxStalledCount: 1,
+      },
+    );
     worker.on("failed", console.error);
 
     const audioPlayer = createAudioPlayer();

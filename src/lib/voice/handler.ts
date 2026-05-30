@@ -128,23 +128,17 @@ export async function playText(rawText: string, options: VoiceData) {
       console.warn("Voice connection error:", error.message);
     });
 
-    await new Promise<void>((res, _) => {
-      connection?.once(VoiceConnectionStatus.Ready, res);
-    });
+    if (connection.state.status !== VoiceConnectionStatus.Ready) {
+      await new Promise<void>((res, _) => {
+        connection?.once(VoiceConnectionStatus.Ready, res);
+      });
+    }
   }
 
-  audioPlayer.play(audioResource);
   connection.subscribe(audioPlayer);
 
-  return new Promise<void>((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      audioPlayer.removeListener(AudioPlayerStatus.Idle, idleAction);
-      audioPlayer.removeListener("error", errorAction);
-      reject(new Error("TTS playback timeout"));
-    }, 30_000);
-
+  const promise = new Promise<void>((resolve, reject) => {
     const cleanup = () => {
-      clearTimeout(timeout);
       audioPlayer.removeListener(AudioPlayerStatus.Idle, idleAction);
       audioPlayer.removeListener("error", errorAction);
     };
@@ -162,4 +156,8 @@ export async function playText(rawText: string, options: VoiceData) {
     audioPlayer.once("error", errorAction);
     audioPlayer.once(AudioPlayerStatus.Idle, idleAction);
   });
+
+  audioPlayer.play(audioResource);
+
+  return promise;
 }
