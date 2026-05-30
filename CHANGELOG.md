@@ -1,5 +1,13 @@
 # koala
 
+## 0.5.3
+
+### Patch Changes
+
+- 786267a: fixed some buggy calls
+- f012001: added maintenance mode status
+- 2825041: added top.gg stats reporting
+
 ## 0.5.2
 
 ### Patch Changes
