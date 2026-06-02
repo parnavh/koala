@@ -1,5 +1,11 @@
 # koala
 
+## 0.5.4
+
+### Patch Changes
+
+- 3ce2c17: fixed memory leak with voiceConnection event listener
+
 ## 0.5.3
 
 ### Patch Changes
