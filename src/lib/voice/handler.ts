@@ -124,9 +124,11 @@ export async function playText(rawText: string, options: VoiceData) {
       adapterCreator: guild.voiceAdapterCreator,
     });
 
-    connection.on("error", (error) => {
-      console.warn("Voice connection error:", error.message);
-    });
+    if (connection.listenerCount("error") === 0) {
+      connection.on("error", (error) => {
+        console.warn("Voice connection error:", error.message);
+      });
+    }
 
     if (connection.state.status !== VoiceConnectionStatus.Ready) {
       await new Promise<void>((res, _) => {
