@@ -13,6 +13,7 @@ type Voice = {
 
 export type VoiceData = {
   guildId: string;
+  userId: string;
   channelId: string;
 };
 

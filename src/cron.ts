@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import { env } from "@/env";
 
-function updateMetrics() {
+async function updateMetrics() {
   const serverCount = global.koala.client.guilds.cache.size;
 
   const memberCount = global.koala.client.guilds.cache.reduce(
@@ -9,7 +9,9 @@ function updateMetrics() {
     0,
   );
 
-  koala.db.putGlobalMetrics(serverCount, memberCount);
+  const activeUsers = await koala.db.getMonthlyActiveUsers();
+
+  koala.db.putGlobalMetrics(serverCount, memberCount, activeUsers);
 }
 
 async function updateBotStats() {

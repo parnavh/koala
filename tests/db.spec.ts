@@ -5,6 +5,7 @@ import { describe, beforeEach, it, expect } from "vitest";
 const db = new Database();
 const guildId = "1";
 const channels = ["100", "101", "102"];
+const users = ["901", "902"];
 
 describe("voice config", () => {
   beforeEach(async () => {
@@ -74,20 +75,43 @@ describe("voice config", () => {
 describe("guild metrics", () => {
   beforeEach(async () => {
     return async () => {
-      await db.deleteMetrics(guildId);
+      const promises = [];
+
+      promises.push(db.deleteGuildMetrics(guildId));
+      users.forEach((user) => promises.push(db.deleteUserMetrics(user)));
+
+      await Promise.all(promises);
     };
   });
 
   it("voice character usage", async () => {
     await db.guildMetricsUpdate(guildId, 200);
-    const result = await db.getMetrics(guildId);
-    expect(result?.voiceCharacters).toBe(200);
+    const result1 = await db.getMetrics(guildId);
+    expect(result1?.voiceCharacters).toBe(200);
+    expect(result1?.invocations).toBe(1);
+
+    await db.guildMetricsUpdate(guildId, 250);
+    const result2 = await db.getMetrics(guildId);
+    expect(result2?.voiceCharacters).toBe(450);
+    expect(result2?.invocations).toBe(2);
   });
 
   it("server member count", async () => {
     await db.guildMetricsUpdate(guildId, 30, 20);
     const result = await db.getMetrics(guildId);
     expect(result?.memberCount).toBe(20);
+  });
+
+  it("active user count", async () => {
+    await db.trackUserActivity(users[0]);
+    await db.trackUserActivity(users[1]);
+    await db.trackUserActivity(users[0]);
+
+    const mau = await db.getMonthlyActiveUsers();
+    expect(mau).toBe(2);
+
+    const mi = await db.getMonthlyInvocations();
+    expect(mi).toBe(3);
   });
 });
 

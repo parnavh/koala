@@ -78,6 +78,7 @@ export class VoiceCommands {
 
     koala.queue.addToVoiceQueue(text, {
       channelId: member.voice.channel.id,
+      userId: member.user.id,
       guildId: interaction.guild.id,
     });
   }

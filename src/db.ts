@@ -248,7 +248,7 @@ export class Database {
     });
   }
 
-  async deleteMetrics(guildId: string) {
+  async deleteGuildMetrics(guildId: string) {
     const guildIdBigInt = BigInt(guildId);
 
     await this.prisma.guildMetrics
@@ -256,6 +256,16 @@ export class Database {
         where: {
           guildId: guildIdBigInt,
         },
+      })
+      .catch(() => {});
+  }
+
+  async deleteUserMetrics(userId: string) {
+    const userIdBigInt = BigInt(userId);
+
+    await this.prisma.userActivity
+      .deleteMany({
+        where: { userId: userIdBigInt },
       })
       .catch(() => {});
   }
@@ -272,11 +282,13 @@ export class Database {
       update: {
         voiceCharacters: { increment: voiceCharacters },
         memberCount,
+        invocations: { increment: 1 },
       },
       create: {
         guildId: guildIdBigInt,
         voiceCharacters: voiceCharacters,
         memberCount,
+        invocations: 1,
       },
     });
 
@@ -311,11 +323,51 @@ export class Database {
     await this.redis.del("global:maintenance");
   }
 
-  async putGlobalMetrics(totalGuilds: number, totalUsers: number) {
+  async getMonthlyActiveUsers() {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const activeUsers = await this.prisma.userActivity.groupBy({
+      by: ["userId"],
+      where: { date: { gte: thirtyDaysAgo } },
+    });
+
+    return activeUsers.length;
+  }
+
+  async getMonthlyInvocations() {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const result = await this.prisma.userActivity.aggregate({
+      where: { date: { gte: thirtyDaysAgo } },
+      _sum: { invocations: true },
+    });
+
+    return result._sum.invocations ?? 0;
+  }
+
+  async trackUserActivity(userId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    await this.prisma.userActivity.upsert({
+      where: { userId_date: { userId: BigInt(userId), date: today } },
+      update: { invocations: { increment: 1 } },
+      create: { userId: BigInt(userId), invocations: 1, date: today },
+    });
+  }
+
+  async putGlobalMetrics(
+    totalGuilds: number,
+    totalUsers: number,
+    totalActiveUsers: number,
+  ) {
     await this.prisma.globalMetrics.create({
       data: {
         totalGuilds,
         totalUsers,
+        totalActiveUsers,
       },
     });
   }

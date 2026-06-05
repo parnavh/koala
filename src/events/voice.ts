@@ -24,6 +24,9 @@ export class Voice {
     _: KoalaClient,
   ) {
     if (oldState.channel || !newState.channel) return;
+    if (!newState.member) return;
+
+    const userId = newState.member.user.id;
 
     const enabled = await koala.db.isVoiceAnnounceEnabled(
       newState.guild.id,
@@ -44,6 +47,7 @@ export class Voice {
     setTimeout(() => {
       koala.queue.addToVoiceQueue(message, {
         channelId: channelId,
+        userId,
         guildId: newState.guild.id,
       });
     }, delay);
@@ -56,6 +60,9 @@ export class Voice {
     client: KoalaClient,
   ) {
     if (!oldState.channel || newState.channel) return;
+    if (!oldState.member) return;
+
+    const userId = oldState.member.user.id;
 
     if (getVoiceMemberCount(oldState) === 0) {
       if (oldState.channel.members.find((m) => m.user.id === client.user!.id)) {
@@ -73,6 +80,7 @@ export class Voice {
 
     koala.queue.addToVoiceQueue(`${oldState.member?.displayName} left`, {
       channelId: oldState.channel.id,
+      userId,
       guildId: oldState.guild.id,
     });
   }

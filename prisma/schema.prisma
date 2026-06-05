@@ -38,13 +38,24 @@ enum VoiceAnnounceModes {
 
 model GuildMetrics {
   guildId         BigInt @id @unique
-  voiceCharacters Int
+  voiceCharacters Int    @default(0)
   memberCount     Int    @default(0)
+  invocations     Int    @default(0)
+}
+
+model UserActivity {
+  userId      BigInt
+  invocations Int      @default(0)
+  date        DateTime @default(now()) @db.Date
+
+  @@id([userId, date])
+  @@index([date])
 }
 
 model GlobalMetrics {
-  id          String @id @default(cuid())
-  date        DateTime? @unique @default(now())
-  totalGuilds Int
-  totalUsers  Int
+  id               String    @id @default(cuid())
+  date             DateTime? @unique @default(now())
+  totalGuilds      Int
+  totalUsers       Int
+  totalActiveUsers Int
 }
