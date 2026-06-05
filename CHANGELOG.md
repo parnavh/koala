@@ -1,5 +1,12 @@
 # koala
 
+## 0.6.0
+
+### Minor Changes
+
+- df37fdd: queues are now paused in maintenance mode and recreated on bot restart
+- 9af3633: added user activity and invocation metrics
+
 ## 0.5.4
 
 ### Patch Changes
