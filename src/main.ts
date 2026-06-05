@@ -23,8 +23,6 @@ export const bot = new Client({
 
   // Debug logs are disabled in silent mode
   silent: process.env.NODE_ENV === "production" ? true : false,
-
-  presence: BotPresence,
 });
 
 bot.once("ready", async () => {
@@ -42,6 +40,8 @@ bot.once("ready", async () => {
 
   if (await koala.db.getMaintenanceMode()) {
     bot.user?.setPresence(BotPresenceMaintenance);
+  } else {
+    bot.user?.setPresence(BotPresence);
   }
 
   console.log("Bot started");

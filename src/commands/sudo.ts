@@ -63,17 +63,19 @@ export class SuperUserCommands {
     interaction: CommandInteraction,
     _: KoalaClient,
   ) {
+    await interaction.deferReply({ ephemeral: true });
     await koala.db.setMaintenanceMode(state);
 
     if (state === true) {
       koala.client.user?.setPresence(BotPresenceMaintenance);
+      await koala.queue.pause();
     } else {
       koala.client.user?.setPresence(BotPresence);
+      await koala.queue.resume();
     }
 
-    interaction.reply({
+    interaction.editReply({
       content: "Maintenance mode " + (state === true ? "enabled" : "disabled"),
-      ephemeral: true,
     });
   }
 }

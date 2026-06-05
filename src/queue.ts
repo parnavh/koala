@@ -26,6 +26,32 @@ export class Queue {
     this.connection = new IORedis(env.REDIS_URL, {
       maxRetriesPerRequest: null,
     });
+
+    this.init();
+  }
+
+  async init() {
+    const allKeys = await this.connection.keys("bull:voice-*:meta");
+    const pausedKeys = await this.connection.keys("bull:voice-*:paused");
+
+    const pausedGuilds = new Set(
+      pausedKeys.map((key) => key.match(/-(\d+):/)?.[1]).filter(Boolean),
+    );
+
+    for (const key of allKeys) {
+      const guildId = key.match(/-(\d+):/)?.[1];
+      if (!guildId) continue;
+
+      if (pausedGuilds.has(guildId)) {
+        this.addVoiceQueue(guildId);
+        continue;
+      }
+
+      const orphanedKeys = await this.connection.keys(
+        `bull:voice-${guildId}:*`,
+      );
+      if (orphanedKeys.length) this.connection.del(...orphanedKeys);
+    }
   }
 
   private async voiceWorker(job: Job<VoiceData>) {
@@ -80,5 +106,34 @@ export class Queue {
     await worker.close(true);
     await queue.obliterate({ force: true });
     delete this.voice[guildId];
+  }
+
+  async pause() {
+    const promises = [];
+    for (const guildId in this.voice) {
+      const { queue, worker } = this.voice[guildId];
+
+      promises.push(queue.pause());
+
+      if ((await queue.getActiveCount()) > 0) {
+        promises.push(
+          new Promise<void>((resolve) => {
+            worker.once("drained", resolve);
+          }),
+        );
+      }
+    }
+
+    await Promise.allSettled(promises);
+  }
+
+  async resume() {
+    const promises = [];
+
+    for (const guildId in this.voice) {
+      promises.push(this.voice[guildId].queue.resume());
+    }
+
+    await Promise.allSettled(promises);
   }
 }
