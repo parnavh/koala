@@ -9,9 +9,7 @@ async function updateMetrics() {
     0,
   );
 
-  const activeUsers = await koala.db.getMonthlyActiveUsers();
-
-  koala.db.putGlobalMetrics(serverCount, memberCount, activeUsers);
+  koala.db.putGlobalMetrics(serverCount, memberCount);
 }
 
 async function updateBotStats() {

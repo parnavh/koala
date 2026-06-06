@@ -44,8 +44,16 @@ export class SuperUserCommands {
       0,
     );
 
+    const mau = await koala.db.getMonthlyActiveUsers();
+    const mi = await koala.db.getMonthlyInvocations();
+
     interaction.editReply({
-      content: `In \`${serverCount}\` servers\n\`${memberCount}\` Users!`,
+      content: [
+        `In \`${serverCount}\` servers`,
+        `\`${memberCount}\` Users!`,
+        `\`${mau}\` Active Users!`,
+        `\`${mi}\` Invocations!`,
+      ].join("\n"),
     });
   }
 

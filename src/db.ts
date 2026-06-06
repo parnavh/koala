@@ -358,16 +358,13 @@ export class Database {
     });
   }
 
-  async putGlobalMetrics(
-    totalGuilds: number,
-    totalUsers: number,
-    totalActiveUsers: number,
-  ) {
+  async putGlobalMetrics(totalGuilds: number, totalUsers: number) {
     await this.prisma.globalMetrics.create({
       data: {
         totalGuilds,
         totalUsers,
-        totalActiveUsers,
+        totalActiveUsers: await this.getMonthlyActiveUsers(),
+        totalInvocations: await this.getMonthlyInvocations(),
       },
     });
   }
