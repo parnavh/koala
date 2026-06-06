@@ -1,6 +1,7 @@
 import {
   AudioPlayerStatus,
   createAudioResource,
+  entersState,
   getVoiceConnection,
   joinVoiceChannel,
   VoiceConnectionStatus,
@@ -131,12 +132,10 @@ export async function playText(rawText: string, options: VoiceData) {
         console.warn("Voice connection error:", error.message);
       });
     }
+  }
 
-    if (connection.state.status !== VoiceConnectionStatus.Ready) {
-      await new Promise<void>((res, _) => {
-        connection?.once(VoiceConnectionStatus.Ready, res);
-      });
-    }
+  if (connection.state.status !== VoiceConnectionStatus.Ready) {
+    await entersState(connection, VoiceConnectionStatus.Ready, 10_000);
   }
 
   connection.subscribe(audioPlayer);

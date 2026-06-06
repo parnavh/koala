@@ -111,6 +111,7 @@ export class Voice {
     if (!oldState.member || !client.user) return;
     if (oldState.member.id !== client.user.id) return;
 
+    disconnectVoice(oldState.guild.id);
     await koala.queue.destroyVoiceQueue(oldState.guild.id);
   }
 }
