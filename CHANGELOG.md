@@ -1,5 +1,11 @@
 # koala
 
+## 0.6.2
+
+### Patch Changes
+
+- 01c9dea: voice connection cleaned up properly on disconnect
+
 ## 0.6.1
 
 ### Patch Changes
