@@ -1,5 +1,12 @@
 # koala
 
+## 0.6.1
+
+### Patch Changes
+
+- 49c449b: invocations are now stored in GlobalMetrics
+- 0675570: fix: user activity not being tracked
+
 ## 0.6.0
 
 ### Minor Changes
