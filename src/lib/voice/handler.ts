@@ -75,6 +75,8 @@ async function isVoiceChannelEmpty(guild: Guild, channelId: string) {
 }
 
 export async function playText(rawText: string, options: VoiceData) {
+  koala.db.trackUserActivity(options.userId);
+
   const sanitizedText = sanitizeText(rawText);
 
   const hash = createHash("sha256").update(sanitizedText).digest("hex");
