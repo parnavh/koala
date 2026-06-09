@@ -1,5 +1,11 @@
 # koala
 
+## 0.6.4
+
+### Patch Changes
+
+- 45fd50d: fixed queue crash on connection timeout
+
 ## 0.6.3
 
 ### Patch Changes
