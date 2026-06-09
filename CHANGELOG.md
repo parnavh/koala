@@ -1,5 +1,11 @@
 # koala
 
+## 0.6.3
+
+### Patch Changes
+
+- 7a7ea01: fixed queue failing on disconnect
+
 ## 0.6.2
 
 ### Patch Changes
