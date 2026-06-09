@@ -135,7 +135,17 @@ export async function playText(rawText: string, options: VoiceData) {
   }
 
   if (connection.state.status !== VoiceConnectionStatus.Ready) {
-    await entersState(connection, VoiceConnectionStatus.Ready, 10_000);
+    try {
+      await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
+    } catch (error) {
+      console.log(
+        `Unable to connect to ${options.channelId} in guild ${options.guildId} voiceState: ${connection.state.status}`,
+      );
+      console.error(error);
+      connection.disconnect();
+      connection.destroy();
+      return;
+    }
   }
 
   connection.subscribe(audioPlayer);
