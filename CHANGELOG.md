@@ -1,5 +1,11 @@
 # koala
 
+## 0.6.5
+
+### Patch Changes
+
+- 7edb728: fixed requests for channels without proper permissions
+
 ## 0.6.4
 
 ### Patch Changes
