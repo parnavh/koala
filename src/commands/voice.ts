@@ -1,4 +1,5 @@
 import { ERROR_MESSAGES } from "@/errors";
+import { hasVoicePerms } from "@/lib/voice/guards";
 import {
   ApplicationCommandOptionType,
   type CommandInteraction,
@@ -49,6 +50,13 @@ export class VoiceCommands {
       return void interaction.reply({
         ephemeral: true,
         content: "You do not have permission to speak :(",
+      });
+    }
+
+    if (!hasVoicePerms(interaction.guild.members.me, member.voice.channel)) {
+      return void interaction.reply({
+        ephemeral: true,
+        content: `I do not have permission to connect/speak in <#${member.voice.channel.id}> :(`,
       });
     }
 

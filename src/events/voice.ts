@@ -2,6 +2,7 @@ import { type ArgsOf, Discord, On, Guard } from "discordx";
 import { getVoiceConnection } from "@discordjs/voice";
 import { NotBot } from "@discordx/utilities";
 import type { VoiceState } from "discord.js";
+import { hasVoicePerms } from "@/lib/voice/guards";
 
 function getVoiceMemberCount(state: VoiceState) {
   return state.channel?.members.filter((m) => !m.user.bot).size ?? 0;
@@ -34,6 +35,12 @@ export class Voice {
     );
 
     if (!enabled) return;
+
+    if (!newState.guild.members.me) return;
+
+    if (!hasVoicePerms(newState.guild.members.me, newState.channel)) {
+      return;
+    }
 
     let message = `${newState.member?.displayName} joined`;
     let delay = 0;
@@ -77,6 +84,10 @@ export class Voice {
     );
 
     if (!enabled) return;
+
+    if (!hasVoicePerms(oldState.guild.members.me, oldState.channel)) {
+      return;
+    }
 
     koala.queue.addToVoiceQueue(`${oldState.member?.displayName} left`, {
       channelId: oldState.channel.id,
