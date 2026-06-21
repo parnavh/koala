@@ -5,7 +5,6 @@ import {
   type CommandInteraction,
   Team,
   ApplicationCommandOptionType,
-  ActivityType,
 } from "discord.js";
 import {
   Discord,
@@ -85,5 +84,41 @@ export class SuperUserCommands {
     interaction.editReply({
       content: "Maintenance mode " + (state === true ? "enabled" : "disabled"),
     });
+  }
+
+  @Slash({ description: "Message a guild owner" })
+  async messageowner(
+    @SlashOption({
+      name: "guildid",
+      description: "Guild ID",
+      type: ApplicationCommandOptionType.String,
+      required: true,
+    })
+    guildId: string,
+    @SlashOption({
+      name: "message",
+      description: "Message to send",
+      type: ApplicationCommandOptionType.String,
+      required: true,
+    })
+    message: string,
+    interaction: CommandInteraction,
+    client: KoalaClient,
+  ) {
+    await interaction.deferReply({ ephemeral: true });
+
+    try {
+      const guild = await client.guilds.fetch(guildId);
+      const owner = await client.users.fetch(guild.ownerId);
+      await owner.send(message);
+      interaction.editReply({
+        content: [
+          `Sent to **${owner.username}** (\`${owner.id}\`)`,
+          `Guild: **${guild.name}** (\`${guild.id}\`)`,
+        ].join("\n"),
+      });
+    } catch (error) {
+      interaction.editReply({ content: `Failed: ${error}` });
+    }
   }
 }
