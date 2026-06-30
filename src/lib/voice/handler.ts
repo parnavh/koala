@@ -136,12 +136,16 @@ export async function playText(rawText: string, options: VoiceData) {
 
   if (connection.state.status !== VoiceConnectionStatus.Ready) {
     try {
-      await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
+      await entersState(connection, VoiceConnectionStatus.Ready, 10_000);
     } catch (error) {
       koala.logger.error(
+        {
+          connection,
+          channel: await guild.channels.fetch(options.channelId),
+          err: error,
+        },
         `Unable to connect to ${options.channelId} in guild ${options.guildId} voiceState: ${connection.state.status}`,
       );
-      koala.logger.error(error);
       connection.disconnect();
       connection.destroy();
       return;
