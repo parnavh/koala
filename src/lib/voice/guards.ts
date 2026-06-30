@@ -1,3 +1,4 @@
+import { voicePerms } from "@/constants";
 import { GuildMember, VoiceBasedChannel } from "discord.js";
 
 export const hasVoicePerms = (
@@ -6,7 +7,5 @@ export const hasVoicePerms = (
 ) => {
   if (!channel || !me) return false;
 
-  return (["Connect", "Speak"] as const).every((perm) =>
-    me.permissionsIn(channel).has(perm),
-  );
+  return voicePerms.every((perm) => me.permissionsIn(channel).has(perm));
 };

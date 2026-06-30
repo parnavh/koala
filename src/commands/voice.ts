@@ -56,7 +56,7 @@ export class VoiceCommands {
     if (!hasVoicePerms(interaction.guild.members.me, member.voice.channel)) {
       return void interaction.reply({
         ephemeral: true,
-        content: `I do not have permission to connect/speak in <#${member.voice.channel.id}> :(`,
+        content: `I do not have permission to view channel/connect/speak in <#${member.voice.channel.id}> :(`,
       });
     }
 

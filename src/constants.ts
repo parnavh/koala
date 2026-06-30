@@ -19,3 +19,5 @@ export const HELP_DESCRIPTION = `Koala is a voice utility-focused bot that enhan
 \nBy default, announcements are enabled for every channel, so you're ready to go right out of the box!\n`;
 
 export const MAX_TTS_TIME_MS = 60 * 1000;
+
+export const voicePerms = ["Connect", "Speak", "ViewChannel"] as const;
