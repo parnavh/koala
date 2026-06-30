@@ -7,6 +7,7 @@ import { Database } from "@/db";
 import "@/cron";
 import { BotPresence, BotPresenceMaintenance } from "@/constants";
 import { env } from "@/env";
+import Pino from "pino";
 
 export const bot = new Client({
   // To use only guild command
@@ -44,7 +45,7 @@ bot.once("ready", async () => {
     bot.user?.setPresence(BotPresence);
   }
 
-  console.log("Bot started");
+  koala.logger.info("Bot started");
 });
 
 bot.on("interactionCreate", (interaction: Interaction) => {
@@ -59,6 +60,7 @@ global.koala = {
   client: bot,
   queue: new Queue(),
   db: new Database(),
+  logger: Pino(),
 };
 
 async function run() {
@@ -73,7 +75,7 @@ async function run() {
   await bot.login(env.BOT_TOKEN);
 }
 
-process.on("unhandledRejection", console.error);
-process.on("uncaughtException", console.error);
+process.on("unhandledRejection", koala.logger.error);
+process.on("uncaughtException", koala.logger.error);
 
 run();

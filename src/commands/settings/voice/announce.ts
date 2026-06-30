@@ -149,7 +149,7 @@ export class VoiceSettings {
     const config = await koala.db.getVoiceConfig(interaction.guild.id);
 
     if (!config) {
-      return console.warn(
+      return koala.logger.warn(
         `Voice channel change initiated for a guild with no voice config, guilId: ${interaction.guild.id}`,
       );
     }
@@ -186,7 +186,7 @@ export class VoiceSettings {
     const config = await koala.db.getVoiceConfig(interaction.guild.id);
 
     if (!config) {
-      return console.warn(
+      return koala.logger.warn(
         `Voice channel change initiated for a guild with no voice config, guilId: ${interaction.guild.id}`,
       );
     }

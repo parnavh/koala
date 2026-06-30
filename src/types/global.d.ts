@@ -1,6 +1,7 @@
 import type { Database } from "@/db";
 import type { Queue } from "@/queue";
 import type { Client } from "discordx";
+import type Logger from "pino";
 
 declare global {
   interface KoalaClient extends Client {}
@@ -8,5 +9,6 @@ declare global {
     client: KoalaClient;
     queue: Queue;
     db: Database;
+    logger: Logger;
   };
 }

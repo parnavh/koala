@@ -33,18 +33,18 @@
           buildInputs = with pkgs; [
             ffmpeg
             gnumake
-            nodePackages.prisma
-            nodejs_20
+            prisma_6
+            nodejs_22
             openssl
-            pnpm_9
+            pnpm_10
             python3
           ];
           shellHook = with pkgs; ''
-            export PRISMA_SCHEMA_ENGINE_BINARY="${prisma-engines}/bin/schema-engine"
-            export PRISMA_QUERY_ENGINE_BINARY="${prisma-engines}/bin/query-engine"
-            export PRISMA_QUERY_ENGINE_LIBRARY="${prisma-engines}/lib/libquery_engine.node"
-            export PRISMA_INTROSPECTION_ENGINE_BINARY="${prisma-engines}/bin/introspection-engine"
-            export PRISMA_FMT_BINARY="${prisma-engines}/bin/prisma-fmt"
+            export PRISMA_SCHEMA_ENGINE_BINARY="${prisma-engines_6}/bin/schema-engine"
+            export PRISMA_QUERY_ENGINE_BINARY="${prisma-engines_6}/bin/query-engine"
+            export PRISMA_QUERY_ENGINE_LIBRARY="${prisma-engines_6}/lib/libquery_engine.node"
+            export PRISMA_INTROSPECTION_ENGINE_BINARY="${prisma-engines_6}/bin/introspection-engine"
+            export PRISMA_FMT_BINARY="${prisma-engines_6}/bin/prisma-fmt"
           '';
         };
       }

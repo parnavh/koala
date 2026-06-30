@@ -75,7 +75,7 @@ export class Queue {
         maxStalledCount: 1,
       },
     );
-    worker.on("failed", console.error);
+    worker.on("failed", koala.logger.error);
 
     const audioPlayer = createAudioPlayer();
     this.voice[guildId] = { queue, worker, audioPlayer };

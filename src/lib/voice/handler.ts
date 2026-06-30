@@ -51,18 +51,18 @@ async function isVoiceChannelEmpty(guild: Guild, channelId: string) {
   try {
     channel = await guild.channels.fetch(channelId);
   } catch (error) {
-    console.error(error);
+    koala.logger.error(error);
   }
 
   if (!channel) {
-    console.error(
+    koala.logger.error(
       `ghost guild voice channel [guild: ${guild.id}  channelId: ${channelId}]`,
     );
     return true;
   }
 
   if (channel.members instanceof ThreadMemberManager) {
-    console.error(
+    koala.logger.error(
       `this should not be possible -> channel should not be a thread [guild: ${guild.id}  channelId: ${channelId}]`,
     );
     return true;
@@ -87,7 +87,7 @@ export async function playText(rawText: string, options: VoiceData) {
   );
 
   if (!guild) {
-    console.error("No guild found while trying to play audio");
+    koala.logger.error("No guild found while trying to play audio");
     return;
   }
 
@@ -129,7 +129,7 @@ export async function playText(rawText: string, options: VoiceData) {
 
     if (connection.listenerCount("error") === 0) {
       connection.on("error", (error) => {
-        console.warn("Voice connection error:", error.message);
+        koala.logger.error("Voice connection error:", error.message);
       });
     }
   }
@@ -138,10 +138,10 @@ export async function playText(rawText: string, options: VoiceData) {
     try {
       await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
     } catch (error) {
-      console.log(
+      koala.logger.error(
         `Unable to connect to ${options.channelId} in guild ${options.guildId} voiceState: ${connection.state.status}`,
       );
-      console.error(error);
+      koala.logger.error(error);
       connection.disconnect();
       connection.destroy();
       return;

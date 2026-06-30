@@ -28,7 +28,7 @@ async function updateBotStats() {
   });
 
   if (!response.ok) {
-    console.warn(
+    koala.logger.warn(
       `Failed to update stats: ${response.status} ${response.statusText}`,
     );
   }
