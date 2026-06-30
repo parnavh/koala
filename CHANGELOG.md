@@ -1,5 +1,11 @@
 # koala
 
+## 0.6.7
+
+### Patch Changes
+
+- b139c3f: fixed permission checks
+
 ## 0.6.6
 
 ### Patch Changes
