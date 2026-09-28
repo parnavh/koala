@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "outDir": "build",
     "strict": true,
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
@@ -15,9 +14,10 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": ["src/*"],
+    },
   },
+
   "include": ["src", "tests"],
-  "exclude": ["build", "node_modules"]
+  "exclude": ["node_modules"],
 }
