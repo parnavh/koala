@@ -1,4 +1,4 @@
-name: Release
+name: release
 
 on:
   push:
@@ -16,25 +16,24 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 9
+          bun-version: 1.3.13
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "pnpm"
+          node-version: 24
 
       - name: Install Dependencies
-        run: pnpm install
+        run: bun install --frozen-lockfile
 
       - name: Create Github Release
         uses: changesets/action@v1
         with:
           commit: "chore(release): 📦 version packages"
           title: "chore(release): 📦  version packages"
-          publish: pnpm changeset tag
+          publish: bunx changeset tag
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}

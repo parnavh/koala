@@ -14,38 +14,54 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-      in
-      {
 
-        packages.default = pkgs.writeScriptBin "start" ''
-          #!/bin/bash
-          pnpm install
-          pnpm build
-          pnpm start
+        runtimeDeps = with pkgs; [
+          bun
+          ffmpeg
+          prisma-engines_6
+          openssl
+          python3
+        ];
+
+        buildDeps = runtimeDeps ++ [
+          pkgs.gcc
+          pkgs.gnumake
+          pkgs.gnused
+          pkgs.node-gyp
+        ];
+
+        prismaEnv = ''
+          export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines_6}/bin/schema-engine"
+          export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines_6}/bin/query-engine"
+          export PRISMA_QUERY_ENGINE_LIBRARY="${pkgs.prisma-engines_6}/lib/libquery_engine.node"
+          export PRISMA_FMT_BINARY="${pkgs.prisma-engines_6}/bin/prisma-fmt"
         '';
 
-        apps.${system}.default = {
-          type = "app";
-          program = "${self.packages.${system}.start}/bin/start";
+      in
+      {
+        packages = {
+          default = pkgs.writeShellApplication {
+            name = "start";
+            runtimeInputs = runtimeDeps;
+            text = ''
+              ${prismaEnv}
+              bun run start
+            '';
+          };
+
+          prod_install = pkgs.writeShellApplication {
+            name = "prod_install";
+            runtimeInputs = buildDeps;
+            text = ''
+              ${prismaEnv}
+              bun install --frozen-lockfile --production
+            '';
+          };
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            ffmpeg
-            gnumake
-            prisma_6
-            nodejs_22
-            openssl
-            pnpm_10
-            python3
-          ];
-          shellHook = with pkgs; ''
-            export PRISMA_SCHEMA_ENGINE_BINARY="${prisma-engines_6}/bin/schema-engine"
-            export PRISMA_QUERY_ENGINE_BINARY="${prisma-engines_6}/bin/query-engine"
-            export PRISMA_QUERY_ENGINE_LIBRARY="${prisma-engines_6}/lib/libquery_engine.node"
-            export PRISMA_INTROSPECTION_ENGINE_BINARY="${prisma-engines_6}/bin/introspection-engine"
-            export PRISMA_FMT_BINARY="${prisma-engines_6}/bin/prisma-fmt"
-          '';
+          buildInputs = buildDeps;
+          shellHook = prismaEnv;
         };
       }
     );
