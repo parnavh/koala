@@ -26,7 +26,7 @@ export const bot = new Client({
   silent: process.env.NODE_ENV === "production" ? true : false,
 });
 
-bot.once("ready", async () => {
+bot.once("clientReady", async () => {
   // Make sure all guilds are cached
   await bot.guilds.fetch();
 

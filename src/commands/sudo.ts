@@ -5,6 +5,7 @@ import {
   type CommandInteraction,
   Team,
   ApplicationCommandOptionType,
+  MessageFlags,
 } from "discord.js";
 import {
   Discord,
@@ -35,7 +36,7 @@ const OwnerOnly: IsGuardUserCallback = async ({ client, user }) => {
 export class SuperUserCommands {
   @Slash({ description: "Status" })
   async status(interaction: CommandInteraction, client: KoalaClient) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     const serverCount = client.guilds.cache.size;
 
     const memberCount = client.guilds.cache.reduce(
@@ -70,7 +71,7 @@ export class SuperUserCommands {
     interaction: CommandInteraction,
     _: KoalaClient,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     await koala.db.setMaintenanceMode(state);
 
     if (state === true) {
@@ -105,7 +106,7 @@ export class SuperUserCommands {
     interaction: CommandInteraction,
     client: KoalaClient,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     try {
       const guild = await client.guilds.fetch(guildId);

@@ -2,6 +2,7 @@ import { ERROR_MESSAGES } from "@/errors";
 import { hasVoicePerms } from "@/lib/voice/guards";
 import {
   ApplicationCommandOptionType,
+  MessageFlags,
   type CommandInteraction,
 } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
@@ -21,7 +22,7 @@ export class VoiceCommands {
   ) {
     if (!interaction.guild) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "This command can only be run in a server",
       });
     }
@@ -32,14 +33,14 @@ export class VoiceCommands {
 
     if (!member) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Are you a ghost?",
       });
     }
 
     if (!member.voice.channel)
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "You need to be in a voice channel to use this command",
       });
 
@@ -48,14 +49,14 @@ export class VoiceCommands {
       !member.permissionsIn(member.voice.channel).has("Speak")
     ) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "You do not have permission to speak :(",
       });
     }
 
     if (!hasVoicePerms(interaction.guild.members.me, member.voice.channel)) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: `I do not have permission to view channel/connect/speak in <#${member.voice.channel.id}> :(`,
       });
     }
@@ -67,7 +68,7 @@ export class VoiceCommands {
         content = ERROR_MESSAGES["maintenance"];
 
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content,
       });
     }
@@ -79,7 +80,7 @@ export class VoiceCommands {
     }
 
     interaction.reply({
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
       content: reply_content,
       allowedMentions: {},
     });

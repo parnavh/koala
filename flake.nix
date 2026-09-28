@@ -18,7 +18,7 @@
         runtimeDeps = with pkgs; [
           bun
           ffmpeg
-          prisma-engines_6
+          prisma-engines_7
           openssl
           python3
         ];
@@ -31,10 +31,7 @@
         ];
 
         prismaEnv = ''
-          export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines_6}/bin/schema-engine"
-          export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines_6}/bin/query-engine"
-          export PRISMA_QUERY_ENGINE_LIBRARY="${pkgs.prisma-engines_6}/lib/libquery_engine.node"
-          export PRISMA_FMT_BINARY="${pkgs.prisma-engines_6}/bin/prisma-fmt"
+          export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines_7}/bin/schema-engine"
         '';
 
       in

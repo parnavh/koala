@@ -10,6 +10,7 @@ import {
   ChannelSelectMenuInteraction,
   ChannelType,
   MessageActionRowComponentBuilder,
+  MessageFlags,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
   VoiceChannel,
@@ -60,13 +61,13 @@ export class VoiceSettings {
   ) {
     if (!interaction.guild || !interaction.guildId) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "This command can only be run in a server",
       });
     }
 
     await interaction.deferReply({
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     let content = "Announcement has been enabled!";
@@ -98,13 +99,13 @@ export class VoiceSettings {
   async disable(interaction: CommandInteraction) {
     if (!interaction.guild || !interaction.guildId) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "This command can only be run in a server",
       });
     }
 
     await interaction.deferReply({
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     let content = "Announcement has been disabled";
@@ -124,7 +125,7 @@ export class VoiceSettings {
   @SelectMenuComponent({ id: /^announcement-voice-channel:\d+$/ })
   async voiceChannels(interaction: ChannelSelectMenuInteraction) {
     await interaction.deferReply({
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     if (!interaction.guild) {
@@ -256,7 +257,7 @@ export class VoiceSettings {
       );
 
     return {
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
       components: totalPages > 1 ? [menuRow, buttonRow] : [menuRow],
       content: `Pick the channels you want to ${
         config?.announceMode == "ENABLE" ? "enable" : "disable"
@@ -298,7 +299,7 @@ export class VoiceSettings {
 
     if (await koala.db.getMaintenanceMode()) {
       return interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: ERROR_MESSAGES["maintenance"],
       });
     }
