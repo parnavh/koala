@@ -75,7 +75,12 @@ async function run() {
   await bot.login(env.BOT_TOKEN);
 }
 
-process.on("unhandledRejection", koala.logger.error);
-process.on("uncaughtException", koala.logger.error);
+process.on("unhandledRejection", (reason) =>
+  koala.logger.error({ err: reason }, "Unhandled rejection"),
+);
+
+process.on("uncaughtException", (err) =>
+  koala.logger.error(err, "Uncaught exception"),
+);
 
 run();
