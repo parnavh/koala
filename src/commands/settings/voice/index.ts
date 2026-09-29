@@ -21,7 +21,7 @@ export class VoiceSettings {
   async enable(interaction: CommandInteraction) {
     if (!interaction.guildId) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "This command can only be run in a server",
       });
     }

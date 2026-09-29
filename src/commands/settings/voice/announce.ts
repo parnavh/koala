@@ -257,7 +257,6 @@ export class VoiceSettings {
       );
 
     return {
-      flags: MessageFlags.Ephemeral,
       components: totalPages > 1 ? [menuRow, buttonRow] : [menuRow],
       content: `Pick the channels you want to ${
         config?.announceMode == "ENABLE" ? "enable" : "disable"
@@ -275,25 +274,25 @@ export class VoiceSettings {
   async channels(interaction: CommandInteraction) {
     if (!interaction.guild || !interaction.guildId) {
       return interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "This command can only be run in a server",
       });
     }
 
     const config = await koala.db.getVoiceConfig(interaction.guildId);
 
-    if (!config || !config.enabled || !config.announce) {
+    if (!config || config.announceMode == "GLOBAL") {
       return interaction.reply({
-        ephemeral: true,
-        content: "Voice announcement is not enabled :(",
+        flags: MessageFlags.Ephemeral,
+        content:
+          "Every channel is enabled for announcement, you do not need to configure this!",
       });
     }
 
-    if (config.announceMode == "GLOBAL") {
+    if (!config.enabled || !config.announce) {
       return interaction.reply({
-        ephemeral: true,
-        content:
-          "Every channel is enabled for announcement, you do not need to configure this!",
+        flags: MessageFlags.Ephemeral,
+        content: "Voice announcement is not enabled :(",
       });
     }
 
@@ -310,6 +309,9 @@ export class VoiceSettings {
         .values(),
     );
 
-    interaction.reply(this.buildMenu(config, voiceChannels, 0));
+    interaction.reply({
+      ...this.buildMenu(config, voiceChannels, 0),
+      flags: MessageFlags.Ephemeral,
+    });
   }
 }
