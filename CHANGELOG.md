@@ -1,5 +1,11 @@
 # koala
 
+## 0.7.1
+
+### Patch Changes
+
+- 8429f50: fixed database migration
+
 ## 0.7.0
 
 ### Minor Changes
