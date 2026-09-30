@@ -1,5 +1,11 @@
 # koala
 
+## 0.7.2
+
+### Patch Changes
+
+- bc53e33: fixed missing prisma file
+
 ## 0.7.1
 
 ### Patch Changes
