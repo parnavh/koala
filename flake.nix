@@ -24,7 +24,7 @@
         ];
 
         buildDeps = runtimeDeps ++ [
-          pkgs.gcc
+          pkgs.gcc13
           pkgs.gnumake
           pkgs.gnused
           pkgs.node-gyp
@@ -32,6 +32,11 @@
 
         prismaEnv = ''
           export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines_7}/bin/schema-engine"
+        '';
+
+        gccEnv = ''
+          export CC="${pkgs.gcc13}/bin/gcc"
+          export CXX="${pkgs.gcc13}/bin/g++"
         '';
 
       in
@@ -50,6 +55,7 @@
             name = "prod_install";
             runtimeInputs = buildDeps;
             text = ''
+              ${gccEnv}
               ${prismaEnv}
               bun install --frozen-lockfile --production
             '';
