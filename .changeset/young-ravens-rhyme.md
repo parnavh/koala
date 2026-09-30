@@ -1,5 +1,0 @@
----
-"koala": minor
----
-
-updated dependencies

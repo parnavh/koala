@@ -1,5 +1,15 @@
 # koala
 
+## 0.7.0
+
+### Minor Changes
+
+- c99fb47: updated dependencies
+
+### Patch Changes
+
+- c99fb47: fixed incorrect status message for setting channels
+
 ## 0.6.8
 
 ### Patch Changes
