@@ -15,4 +15,4 @@ RUN nix run .#prod_install
 
 COPY src/ ./src/
 
-ENTRYPOINT ["nix", "run", "."]
+CMD ["nix", "run", "."]

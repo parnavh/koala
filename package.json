@@ -6,11 +6,12 @@
   "type": "module",
   "main": "src/main.ts",
   "scripts": {
-    "db:gen": "prisma generate",
+    "db:gen": "SKIP_ENV_VALIDATION=1 prisma generate",
+    "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "dev": "bun --watch . | pino-pretty",
-    "postinstall": "SKIP_ENV_VALIDATION=1 bun run db:gen",
+    "postinstall": "bun run db:gen",
     "start": "bun ."
   },
   "dependencies": {

@@ -60,6 +60,15 @@
               bun install --frozen-lockfile --production
             '';
           };
+
+          prod_migrate = pkgs.writeShellApplication {
+            name = "prod_migrate";
+            runtimeInputs = buildDeps;
+            text = ''
+              ${prismaEnv}
+              bun run db:migrate
+            '';
+          };
         };
 
         devShells.default = pkgs.mkShell {
