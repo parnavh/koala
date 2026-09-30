@@ -1,7 +1,11 @@
 import { HELP_DESCRIPTION } from "@/constants";
 import { env } from "@/env";
 import { ERROR_MESSAGES } from "@/errors";
-import { EmbedBuilder, type CommandInteraction } from "discord.js";
+import {
+  EmbedBuilder,
+  MessageFlags,
+  type CommandInteraction,
+} from "discord.js";
 import { Discord, Slash } from "discordx";
 
 function getInviteLink(botId: string) {
@@ -19,7 +23,7 @@ export class MiscCommands {
 
     interaction.reply({
       content: `[Invite link](${url})`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 
@@ -48,7 +52,7 @@ export class MiscCommands {
 
     interaction.reply({
       embeds: [helpEmbed],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

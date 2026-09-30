@@ -1,6 +1,6 @@
 import { MaintenanceError } from "@/errors";
 import { PermissionGuard } from "@discordx/utilities";
-import type { CommandInteraction } from "discord.js";
+import { MessageFlags, type CommandInteraction } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup } from "discordx";
 
 @Discord()
@@ -21,7 +21,7 @@ export class VoiceSettings {
   async enable(interaction: CommandInteraction) {
     if (!interaction.guildId) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "This command can only be run in a server",
       });
     }
@@ -37,7 +37,7 @@ export class VoiceSettings {
 
     interaction.reply({
       content,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 
@@ -51,7 +51,7 @@ export class VoiceSettings {
   async disable(interaction: CommandInteraction) {
     if (!interaction.guildId) {
       return void interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "This command can only be run in a server",
       });
     }
@@ -67,7 +67,7 @@ export class VoiceSettings {
 
     interaction.reply({
       content,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }
