@@ -1,5 +1,6 @@
 import cron from "node-cron";
 import { env } from "@/env";
+import { getVoices } from "@/lib/voice/google-tts";
 
 async function updateMetrics() {
   const serverCount = global.koala.client.guilds.cache.size;
@@ -34,7 +35,13 @@ async function updateBotStats() {
   }
 }
 
+async function updateVoices() {
+  const voices = await getVoices();
+  koala.db.setVoices(voices);
+}
+
 cron.schedule("0 18 * * *", () => {
   updateMetrics();
   updateBotStats();
+  updateVoices();
 });

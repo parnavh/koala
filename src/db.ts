@@ -3,6 +3,8 @@ import IORedis from "ioredis";
 import { env } from "@/env";
 import { MaintenanceError } from "@/errors";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { REDIS_VOICES_KEY } from "@/constants";
+import { getVoices } from "@/lib/voice/google-tts";
 
 export class Database {
   private prisma: PrismaClient;
@@ -370,5 +372,24 @@ export class Database {
         totalInvocations: await this.getMonthlyInvocations(),
       },
     });
+  }
+
+  async setVoices(voices: Awaited<ReturnType<typeof getVoices>>) {
+    this.redis.set(REDIS_VOICES_KEY, JSON.stringify(voices));
+  }
+
+  async getVoices() {
+    type voiceType = Awaited<ReturnType<typeof getVoices>>;
+
+    const rawVoices = await this.redis.get(REDIS_VOICES_KEY);
+
+    if (rawVoices) {
+      return JSON.parse(rawVoices) as voiceType;
+    }
+
+    const voices = await getVoices();
+    this.redis.set(REDIS_VOICES_KEY, JSON.stringify(voices));
+
+    return voices;
   }
 }
