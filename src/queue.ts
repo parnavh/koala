@@ -15,6 +15,7 @@ export type VoiceData = {
   guildId: string;
   userId: string;
   channelId: string;
+  voice: { name: string; languageCode: string };
 };
 
 export class Queue {

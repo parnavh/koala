@@ -21,3 +21,10 @@ export const HELP_DESCRIPTION = `Koala is a voice utility-focused bot that enhan
 export const MAX_TTS_TIME_MS = 60 * 1000;
 
 export const voicePerms = ["Connect", "Speak", "ViewChannel"] as const;
+
+export const REDIS_VOICES_KEY = "global:voices" as const;
+
+export const DEFAULT_VOICE = {
+  name: "en-US-WaveNet-C",
+  languageCode: "en-US",
+};

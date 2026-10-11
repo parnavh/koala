@@ -1,8 +1,10 @@
+import { DEFAULT_VOICE } from "@/constants";
 import { ERROR_MESSAGES } from "@/errors";
 import { hasVoicePerms } from "@/lib/voice/guards";
 import {
   ApplicationCommandOptionType,
   MessageFlags,
+  type AutocompleteInteraction,
   type CommandInteraction,
 } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
@@ -17,9 +19,33 @@ export class VoiceCommands {
       type: ApplicationCommandOptionType.String,
       required: true,
     })
+    @SlashOption({
+      description: "voice model to use",
+      name: "voice",
+      type: ApplicationCommandOptionType.String,
+      autocomplete: true,
+    })
     text: string,
-    interaction: CommandInteraction,
+    rawVoice: string | undefined,
+    interaction: CommandInteraction | AutocompleteInteraction,
   ) {
+    const voices = await koala.db.getVoices();
+
+    if (interaction.isAutocomplete()) {
+      let resp = voices;
+
+      if (rawVoice) {
+        resp = voices.filter((v) => v.display.toLowerCase().includes(rawVoice));
+      }
+
+      return interaction.respond(
+        resp.slice(0, 25).map((og) => ({
+          name: og.display,
+          value: og.value.concat(`|${og.lanaguageCode}`),
+        })),
+      );
+    }
+
     if (!interaction.guild) {
       return void interaction.reply({
         flags: MessageFlags.Ephemeral,
@@ -85,10 +111,19 @@ export class VoiceCommands {
       allowedMentions: {},
     });
 
+    let voice = DEFAULT_VOICE;
+
+    if (rawVoice) {
+      const [name, languageCode] = rawVoice.split("|");
+      const found = voices.find((v) => v.value === name);
+      if (found) voice = { name, languageCode };
+    }
+
     koala.queue.addToVoiceQueue(text, {
       channelId: member.voice.channel.id,
       userId: member.user.id,
       guildId: interaction.guild.id,
+      voice,
     });
   }
 }

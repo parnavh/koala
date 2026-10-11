@@ -8,40 +8,10 @@ import {
 } from "@discordjs/voice";
 import { createHash } from "crypto";
 import { createReadStream, existsSync, mkdirSync } from "fs";
-import textToSpeech from "@google-cloud/text-to-speech";
-import { env } from "@/env";
 import { VoiceData } from "@/queue";
-import { writeFile } from "fs/promises";
 import { Guild, ThreadMemberManager } from "discord.js";
 import { AUDIO_BASE_PATH } from "@/constants";
-
-const speechClient = new textToSpeech.TextToSpeechClient({
-  credentials: {
-    client_email: env.GCP_CLIENT_EMAIL,
-    private_key: env.GCP_PRIVATE_KEY,
-  },
-});
-
-async function createAudioFile(text: string, hash: string) {
-  const [response] = await speechClient.synthesizeSpeech({
-    input: {
-      text,
-    },
-    voice: {
-      name: "en-US-WaveNet-C",
-      languageCode: "en-US",
-    },
-    audioConfig: {
-      audioEncoding: "OGG_OPUS",
-    },
-  });
-
-  if (!response.audioContent) {
-    throw new Error("Audio file generation failed\nText: " + text);
-  }
-
-  await writeFile(`${AUDIO_BASE_PATH}/${hash}.ogg`, response.audioContent);
-}
+import { createAudioFile } from "./google-tts";
 
 const sanitizeText = (text: string) => text.replace(/[^\w\d]+/g, " ");
 
@@ -80,7 +50,9 @@ export async function playText(rawText: string, options: VoiceData) {
 
   const sanitizedText = sanitizeText(rawText);
 
-  const hash = createHash("sha256").update(sanitizedText).digest("hex");
+  const hash = createHash("sha256")
+    .update(sanitizedText.concat(`|${options.voice.name}`))
+    .digest("hex");
 
   const guild = global.koala.client.guilds.cache.find(
     (guild) => guild.id === options.guildId,
@@ -99,13 +71,16 @@ export async function playText(rawText: string, options: VoiceData) {
     mkdirSync(AUDIO_BASE_PATH, { recursive: true });
   }
 
-  if (!existsSync(`${AUDIO_BASE_PATH}/${hash}.ogg`)) {
+  const path = `${AUDIO_BASE_PATH}/${hash}.ogg`;
+
+  if (!existsSync(path)) {
     koala.db.guildMetricsUpdate(
       options.guildId,
       sanitizedText.length,
       guild.memberCount,
     );
-    await createAudioFile(sanitizedText, hash);
+
+    await createAudioFile(sanitizedText, path, options.voice);
   }
 
   if (await isVoiceChannelEmpty(guild, options.channelId)) {
