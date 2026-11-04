@@ -1,5 +1,11 @@
 # koala
 
+## 0.7.3
+
+### Patch Changes
+
+- 3f8b1b2: updated nix deps
+
 ## 0.7.2
 
 ### Patch Changes
